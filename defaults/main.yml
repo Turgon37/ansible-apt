@@ -1,0 +1,34 @@
+---
+# defaults file for apt
+
+# Enable facts deploiement
+apt__facts: True
+
+# Configuration file for APT
+apt__conf_dir: /etc/apt
+
+# Include directory for configuration
+apt__include_conf_dir: '{{ apt__conf_dir }}/apt.conf.d/'
+
+# Sources file
+apt__sources_list: '{{ apt__conf_dir }}/sources.list'
+# Sources dirs
+apt__sources_list_dir: '{{ apt__conf_dir }}/sources.list.d'
+
+# List of GPG Keys to include
+apt__keys: []
+
+# List of repositories to configure
+apt__repositories: []
+
+# Declare a proxy for APT request
+#apt__proxy:
+#  host:
+#  port: 8080
+#  https: true
+
+# Path to the stamp file to update after each update
+apt__stamp_file: /var/lib/apt/periodic/update-success-stamp
+
+# Default cache valid time for update operations
+apt__cache_valid_time: 3600
