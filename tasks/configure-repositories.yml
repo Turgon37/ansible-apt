@@ -1,0 +1,24 @@
+---
+- name: Assert required variables
+  assert:
+    that:
+      - apt__repositories|length > 0
+      - apt__repositories is iterable
+    msg: You must have at least one repository for this host
+
+- name: Configure main sources list file
+  template:
+    src:   'sources.list.j2'
+    dest:  '{{ apt__sources_list }}'
+    owner: root
+    group: root
+    mode:  0644
+
+- name: Adding apt repository
+  apt_repository:
+    repo:     '{{ item.repo }}'
+    codename: '{{ item.codename|d(omit) }}'
+    filename: '{{ item.name|d(omit) }}'
+    state:    "{{ item.state|d('present') }}"
+  with_items: '{{ apt__repositories }}'
+  notify: ['update-package-cache']
