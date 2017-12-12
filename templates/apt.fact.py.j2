@@ -10,9 +10,13 @@ content={
   'reboot_required': None,
   'update_last_success': None,
   'packages_updates' : [],
-  'updates' : None,
+  'packages_dist_updates' : [],
   'packages_security_updates': [],
-  'security_updates': None
+  'packages_security_dist_updates': [],
+  'updates' : None,
+  'dist_updates' : None,
+  'security_updates': None,
+  'security_dist_updates': None
 }
 
 # Regexp that match package names
@@ -32,7 +36,7 @@ def is_exe(fpath):
     """
     return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-def setUpgradablesPackages(cmd, update_regexp, security_update_regexp=None):
+def setUpgradablesPackages(cmd, update_regexp, security_update_regexp=None, key='updates'):
     """Compute upgradable package for the given distribution
     """
     if not is_exe(cmd[0]):
@@ -47,9 +51,15 @@ def setUpgradablesPackages(cmd, update_regexp, security_update_regexp=None):
     for line in result.splitlines():
         match = update_regexp.match(line)
         if match:
-            content['packages_updates'].append(match.group('name'))
+            content['packages_'+key].append(match.group('name'))
             if security_update_regexp and security_update_regexp.search(line):
-                content['packages_security_updates'].append(match.group('name'))
+                content['packages_security_'+key].append(match.group('name'))
+    content[key] = len(content['packages_'+key])
+    content['security_'+key] = len(content['packages_security_'+key])
+    if content[key] > 0:
+        content['has_'+key] = True
+    else:
+        content['has_'+key] = False
 
 
 if __name__ == '__main__':
@@ -68,14 +78,11 @@ if __name__ == '__main__':
     setUpgradablesPackages(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'upgrade',  '--assume-no'],
                             reg_debian_package_name,
                             reg_debian_security_update)
-
-    # COMMON
-    content['updates'] = len(content['packages_updates'])
-    content['security_updates'] = len(content['packages_security_updates'])
-    if content['updates'] > 0:
-        content['has_updates'] = True
-    else:
-        content['has_updates'] = False
+    # DIST UPDATES
+    setUpgradablesPackages(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'dist-upgrade',  '--assume-no'],
+                            reg_debian_package_name,
+                            reg_debian_security_update,
+                            'dist_updates')
 
     print(json.dumps(content))
     sys.exit(0)
