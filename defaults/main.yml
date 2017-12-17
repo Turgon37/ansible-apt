@@ -35,7 +35,7 @@ apt__repositories: []
 #apt__proxy:
 #  host:
 #  port: 8080
-#  https: true
+#  https: True
 
 
 ## Periodic cron task
