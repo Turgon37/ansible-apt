@@ -4,6 +4,11 @@
 # Enable facts deploiement
 apt__facts: True
 
+# List of dependencies packages
+apt__packages_names:
+  - unattended-upgrades
+  - apt-listchanges
+
 # Configuration file for APT
 apt__conf_dir: /etc/apt
 
@@ -21,14 +26,55 @@ apt__keys: []
 # List of repositories to configure
 apt__repositories: []
 
+
+## Base configuration
 # Declare a proxy for APT request
 #apt__proxy:
 #  host:
 #  port: 8080
 #  https: true
 
+
+## Periodic cron task
+# Enable the update/upgrade script (0=disable)
+apt__periodic_enabled: True
+
+# Do "apt-get update" automatically every n-days (0=disable)
+apt__periodic_update_package_lists: False
+
+# Run the "unattended-upgrade" security upgrade script every n-days (0=disabled)
+apt__periodic_unattended_upgrade: False
+
+
+## Unattended Upgrades
+# Send email to this address for problems or packages upgrades
+#apt__unattended_upgrades_mail: ''
+
+# Set this value to "true" to get emails only on errors.
+apt__unattended_upgrades_mail_only_on_error: False
+
+# Automatically reboot *WITHOUT CONFIRMATION*
+#  if the file /var/run/reboot-required is found after the upgrade
+apt__unattended_upgrades_automatic_reboot: False
+
+# Automatically reboot even if there are users currently logged in.
+apt__unattended_upgrades_automatic_reboot_withusers: False
+
+# If automatic reboot is enabled and needed, reboot at the specific time instead of immediately
+apt__unattended_upgrades_automatic_reboot_time: now
+
+
+# List of packages to not update (regexp are supported)
+apt__unattended_upgrades_package_blacklist: []
+
+#apt__unattended_upgrades_
+#apt__unattended_upgrades_
+
+
+## Misc
+
 # Path to the stamp file to update after each update
-apt__stamp_file: /var/lib/apt/periodic/update-success-stamp
+apt__update_stamp_file: /var/lib/apt/periodic/update-success-stamp
 
 # Default cache valid time for update operations
 apt__cache_valid_time: 3600

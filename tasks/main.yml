@@ -17,6 +17,9 @@
     msg: 'This module only works on Debian or derivatives like Ubuntu'
   when: ansible_os_family != 'Debian'
 
+- import_tasks: install.yml
+  tags: ['apt', 'apt-install']
+
 - import_tasks: configure.yml
   tags: ['apt', 'apt-configure']
 

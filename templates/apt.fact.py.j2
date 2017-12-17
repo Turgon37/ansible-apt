@@ -70,8 +70,8 @@ if __name__ == '__main__':
     else:
         content['reboot_required'] = False
     # LAST UPDATE SUCCESS
-    if os.path.isfile('{{ apt__stamp_file }}'):
-        content['update_last_success'] = os.stat('{{ apt__stamp_file }}').st_mtime
+    if os.path.isfile('{{ apt__update_stamp_file }}'):
+        content['update_last_success'] = os.stat('{{ apt__update_stamp_file }}').st_mtime
     else:
         content['update_last_success'] = -1
     # UPDATES

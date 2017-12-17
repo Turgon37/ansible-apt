@@ -1,43 +1,29 @@
 ---
 - name: Create the directory for APT configuration
   file:
-    path:  '{{ apt__conf_dir }}'
-    owner: root
-    group: root
-    mode:  0755
-    state: directory
-
-- name: Create the directory for APT configuration
-  file:
     path:  '{{ item }}'
     owner: root
     group: root
     mode:  0755
     state: directory
   with_items:
+    - '{{ apt__conf_dir }}'
     - '{{ apt__include_conf_dir }}'
     - '{{ apt__sources_list_dir }}'
 
-- name: Install default configuration settings
+- name: Install apt configuration settings
   template:
     src:   '{{ item }}.j2'
     dest:  '{{ apt__include_conf_dir }}/{{ item }}'
     owner: root
     group: root
     mode:  0644
-  with_items:
-    - 15update-stamp
-
-- name: Configuring APT proxy if needed
-  template:
-    src:   '{{ item }}.j2'
-    dest:  '{{ apt__include_conf_dir }}/{{ item }}'
-    owner: root
-    group: root
-    mode:  0644
-  when: apt__proxy is defined and apt__proxy['host'] is defined
   with_items:
     - 01proxy
+    - 02periodic
+    - 15update-stamp
+    - 20auto-upgrades
+    - 50unattended-upgrades
 
 - import_tasks: configure-keys.yml
 - import_tasks: configure-repositories.yml

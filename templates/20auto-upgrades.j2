@@ -1,0 +1,7 @@
+{%- import '_macros.j2' as macros with context -%}
+//
+// {{ ansible_managed }}
+//
+
+APT::Periodic::Update-Package-Lists "{{ apt__periodic_update_package_lists|int }}";
+APT::Periodic::Unattended-Upgrade "{{ apt__periodic_unattended_upgrade|int }}";
