@@ -23,6 +23,10 @@
 - import_tasks: configure.yml
   tags: ['apt', 'apt-configure']
 
+- include_tasks: 'monitoring-{{ apt__monitoring }}.yml'
+  when: apt__monitoring is defined
+  tags: ['apt', 'apt-monitoring']
+
 - include_tasks: facts.yml
   when: apt__facts|bool
   tags: ['apt', 'apt-facts']

@@ -1,0 +1,19 @@
+---
+
+- name: Configure zabbix userparameters
+  include_role:
+    name: zabbix-common
+    tasks_from: userparameter
+  vars:
+    zabbix_common__userparameter:
+      name: apt
+      userparameter:
+        - key: apt.updates
+          command: >
+            /usr/bin/apt-get --just-print --option Debug::NoLocking=true upgrade --assume-no | grep --ignore-case --count --perl-regexp '^Inst((?!security).)*$' | tr -d '\n'
+          comment: package that need normal updates
+        - key: apt.security
+          command: >
+            /usr/bin/apt-get --just-print --option Debug::NoLocking=true upgrade --assume-no | grep --ignore-case --count '^inst.*security' | tr -d '\n'
+          comment: package that need normal updates
+      state: present

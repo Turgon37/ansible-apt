@@ -20,7 +20,7 @@ content={
 }
 
 # Regexp that match package names
-reg_debian_package_name = re.compile('^Inst\s(?P<name>[a-zA-Z0-9_-]+)\s')
+reg_debian_package_name = re.compile('^Inst\s(?P<name>[a-zA-Z0-9_\.-]+)\s')
 
 # Regexp that match security package name
 reg_debian_security_update = re.compile('|'.join([
