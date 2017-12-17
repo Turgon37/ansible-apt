@@ -44,7 +44,7 @@ def setUpgradablesPackages(cmd, update_regexp, security_update_regexp=None, key=
         return
     try:
         with open(os.devnull, 'w') as devnull:
-            result = subprocess.check_output(' '.join(cmd), shell=True, stderr=devnull)
+            result = subprocess.check_output(cmd, stderr=devnull)
     except subprocess.CalledProcessError as e:
         content['error'] = str(e)
         return
