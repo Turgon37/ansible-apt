@@ -5,3 +5,4 @@
 
 APT::Periodic::Update-Package-Lists "{{ apt__periodic_update_package_lists|int }}";
 APT::Periodic::Unattended-Upgrade "{{ apt__periodic_unattended_upgrade|int }}";
+APT::Periodic::Download-Upgradeable-Packages "{{ apt__periodic_download_upgradeable_packages|int }}";

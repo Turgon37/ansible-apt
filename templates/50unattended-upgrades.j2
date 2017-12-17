@@ -50,11 +50,7 @@ Unattended-Upgrade::Package-Blacklist {
 {% endfor %}
 };
 
-// This option allows you to control if on a unclean dpkg exit
-// unattended-upgrades will automatically run 
-//   dpkg --force-confold --configure -a
-// The default is true, to ensure updates keep getting installed
-//Unattended-Upgrade::AutoFixInterruptedDpkg "false";
+Unattended-Upgrade::AutoFixInterruptedDpkg "{{ macros.boolString(apt__unattended_upgrades_auto_fix_interrupted_dpkg) }}";
 
 // Split the upgrade into the smallest possible chunks so that
 // they can be interrupted with SIGUSR1. This makes the upgrade
@@ -62,10 +58,7 @@ Unattended-Upgrade::Package-Blacklist {
 // is running is possible (with a small delay)
 //Unattended-Upgrade::MinimalSteps "true";
 
-// Install all unattended-upgrades when the machine is shuting down
-// instead of doing it in the background while the machine is running
-// This will (obviously) make shutdown slower
-//Unattended-Upgrade::InstallOnShutdown "true";
+Unattended-Upgrade::InstallOnShutdown "{{ macros.boolString(apt__unattended_upgrades_install_on_shutdown) }}";
 
 {% if apt__unattended_upgrades_mail is defined %}
 Unattended-Upgrade::Mail "{{ apt__unattended_upgrades_mail }}";
