@@ -1,0 +1,6 @@
+{%- import '_macros.j2' as macros with context -%}
+//
+// {{ ansible_managed }}
+//
+
+APT::Periodic::Enable "{{ macros.boolNumeric(apt__periodic_enabled) }}";

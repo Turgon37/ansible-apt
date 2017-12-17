@@ -1,0 +1,19 @@
+{#
+ # Produce a boolean in APT string format
+ #
+ # @param value : the value of the boolean
+ # @return string
+ #}
+{%- macro boolString(value) -%}
+{{ value|bool|ternary('true', 'false') }}
+{%- endmacro -%}
+
+{#
+ # Produce a boolean in APT numeric format
+ #
+ # @param value : the value of the boolean
+ # @return string
+ #}
+{%- macro boolNumeric(value) -%}
+{{ value|bool|ternary('1', '0') }}
+{%- endmacro -%}
