@@ -4,6 +4,9 @@
 # Enable facts deploiement
 apt__facts: True
 
+# Choose the monitoring backend to configure (if available)
+#apt__monitoring:
+
 # List of dependencies packages
 apt__packages_names:
   - unattended-upgrades
