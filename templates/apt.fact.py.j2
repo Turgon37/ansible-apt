@@ -43,17 +43,28 @@ def setUpgradablesPackages(cmd, update_regexp, security_update_regexp=None, key=
         content['error'] = cmd[0] + ' not available'
         return
     try:
+{% if apt__use_cached_updates_list|bool %}
+        update_file_name = '{{ apt__cached_updates_file }}' if key == 'updates' else '{{ apt__cached_dist_updates_file }}'
+        with open(update_file_name, 'r') as f:
+            content['packages_'+key] = map(lambda s:s.strip(), f.readlines())
+        security_update_file_name = '{{ apt__cached_security_updates_file }}' if key == 'updates' else '{{ apt__cached_security_dist_updates_file }}'
+        with open(security_update_file_name, 'r') as f:
+            content['packages_security_'+key] = map(lambda s:s.strip(), f.readlines())
+{% else %}
         with open(os.devnull, 'w') as devnull:
             result = subprocess.check_output(cmd, stderr=devnull)
-    except subprocess.CalledProcessError as e:
-        content['error'] = str(e)
-        return
-    for line in result.splitlines():
+        for line in result.splitlines():
         match = update_regexp.match(line)
         if match:
             content['packages_'+key].append(match.group('name'))
             if security_update_regexp and security_update_regexp.search(line):
                 content['packages_security_'+key].append(match.group('name'))
+{% endif %}
+    except (subprocess.CalledProcessError,IOError) as e:
+        content['error'] = str(e)
+        return
+
+    # Compute some another stats on lists
     content[key] = len(content['packages_'+key])
     content['security_'+key] = len(content['packages_security_'+key])
     if content[key] > 0:

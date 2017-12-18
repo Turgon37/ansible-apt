@@ -1,0 +1,19 @@
+//
+// {{ ansible_managed }}
+//
+
+{% if apt__use_cached_updates_list|bool %}
+// Generate list of regular packages updates
+APT::Update::Post-Invoke-Success {"/usr/bin/apt-get --just-print --option Debug::NoLocking=true upgrade --assume-no | grep --ignore-case --perl-regexp '^Inst((?!security).)*$' | awk '{ print $2 }' > {{ apt__cached_updates_file }} || true";};
+
+// Generate list of security packages updates
+APT::Update::Post-Invoke-Success {"/usr/bin/apt-get --just-print --option Debug::NoLocking=true upgrade --assume-no | grep --ignore-case '^inst.*security' | awk '{ print $2 }' > {{ apt__cached_security_updates_file }} || true";};
+
+// Generate list of regular packages dist updates
+APT::Update::Post-Invoke-Success {"/usr/bin/apt-get --just-print --option Debug::NoLocking=true dist-upgrade --assume-no | grep --ignore-case --perl-regexp '^Inst((?!security).)*$' | awk '{ print $2 }' > {{ apt__cached_updates_file }} || true";};
+
+// Generate list of security packages dist updates
+APT::Update::Post-Invoke-Success {"/usr/bin/apt-get --just-print --option Debug::NoLocking=true dist-upgrade --assume-no | grep --ignore-case '^inst.*security' | awk '{ print $2 }' > {{ apt__cached_security_updates_file }} || true";};
+
+{% endif %}
+

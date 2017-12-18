@@ -10,10 +10,18 @@
       userparameter:
         - key: apt.updates
           command: >
+            {%- if apt__use_cached_updates_list|bool -%}
+            /bin/bash -c "if [ -f {{ apt__cached_updates_file }} ]; then wc -l < {{ apt__cached_updates_file }}; else echo -n 'ZBX_NOTSUPPORTED'; fi"
+            {%- else -%}
             /usr/bin/apt-get --just-print --option Debug::NoLocking=true upgrade --assume-no | grep --ignore-case --count --perl-regexp '^Inst((?!security).)*$' | tr -d '\n'
+            {%- endif -%}
           comment: package that need normal updates
         - key: apt.security
           command: >
+            {% if apt__use_cached_updates_list|bool %}
+            /bin/bash -c "if [ -f {{ apt__cached_security_updates_file }} ]; then wc -l < {{ apt__cached_security_updates_file }}; else echo -n 'ZBX_NOTSUPPORTED'; fi"
+            {% else %}
             /usr/bin/apt-get --just-print --option Debug::NoLocking=true upgrade --assume-no | grep --ignore-case --count '^inst.*security' | tr -d '\n'
+            {% endif %}
           comment: package that need normal updates
       state: present
