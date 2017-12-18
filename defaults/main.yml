@@ -95,5 +95,20 @@ apt__unattended_upgrades_package_blacklist: []
 # Path to the stamp file to update after each update
 apt__update_stamp_file: /var/lib/apt/periodic/update-success-stamp
 
+# If true, each apt-get update will generated cached list of package in files
+# and each tols like facts, monitoring items will fetch packages updates from theses files
+# instead of running apt-get directly. It is recommanded to let it to True
+apt__use_cached_updates_list: True
+
+# Path to the file which contains availables packages updates
+apt__cached_updates_file: /var/lib/apt/periodic/packages-updates
+# Path to the file which contains availabes packaes security updates
+apt__cached_security_updates_file: /var/lib/apt/periodic/packages-security-updates
+
+# Path to the file which contains availables packages updates
+apt__cached_dist_updates_file: /var/lib/apt/periodic/packages-dist-updates
+# Path to the file which contains availabes packaes security updates
+apt__cached_security_dist_updates_file: /var/lib/apt/periodic/packages-security-dist-updates
+
 # Default cache valid time for update operations
 apt__cache_valid_time: 3600

@@ -22,6 +22,7 @@
     - 01proxy
     - 02periodic
     - 15update-stamp
+    - 15update-packages-lists
     - 20auto-upgrades
     - 50unattended-upgrades
 
