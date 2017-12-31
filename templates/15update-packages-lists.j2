@@ -14,6 +14,4 @@ APT::Update::Post-Invoke-Success {"/usr/bin/apt-get --just-print --option Debug:
 
 // Generate list of security packages dist updates
 APT::Update::Post-Invoke-Success {"/usr/bin/apt-get --just-print --option Debug::NoLocking=true dist-upgrade --assume-no | grep --ignore-case '^inst.*security' | awk '{ print $2 }' > {{ apt__cached_security_dist_updates_file }} || true";};
-
 {% endif %}
-
