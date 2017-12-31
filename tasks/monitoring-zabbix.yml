@@ -15,7 +15,7 @@
             {%- else -%}
             /usr/bin/apt-get --just-print --option Debug::NoLocking=true upgrade --assume-no | grep --ignore-case --count --perl-regexp '^Inst((?!security).)*$' | tr -d '\n'
             {%- endif -%}
-          comment: package that need normal updates
+          comment: packages number that need normal updates
         - key: apt.security_updates
           command: >
             {% if apt__use_cached_updates_list|bool %}
@@ -23,5 +23,5 @@
             {% else %}
             /usr/bin/apt-get --just-print --option Debug::NoLocking=true upgrade --assume-no | grep --ignore-case --count '^inst.*security' | tr -d '\n'
             {% endif %}
-          comment: package that need normal updates
+          comment: packages number that need security updates
       state: present
