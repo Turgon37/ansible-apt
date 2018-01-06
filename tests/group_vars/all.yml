@@ -1,0 +1,30 @@
+repositories:
+  Debian:
+    jessie:
+      - name:     debian
+        repo:     deb http://deb.debian.org/debian/ jessie main contrib non-free
+        codename: jessie
+    stretch:
+      - name:     debian
+        repo:     deb http://deb.debian.org/debian/ stretch main contrib non-free
+        codename: stretch
+  Raspbian:
+    jessie:
+      - name:     raspbian
+        repo:     deb http://mirrordirector.raspbian.org/raspbian/ jessie main contrib non-free rpi
+        codename: jessie
+    stretch:
+      - name:     raspbian
+        repo:     deb http://mirrordirector.raspbian.org/raspbian/ stretch main contrib non-free rpi
+        codename: stretch
+
+# Get host repository according to facts
+apt__repositories: '{{ repositories[(
+                          ansible_lsb.id if ansible_lsb.id is defined else (
+                            ansible_distribution if ansible_distribution is defined else (
+                              ansible_os_family
+                            )
+                          )
+                        )][
+                          ansible_distribution_release
+                        ] }}'
