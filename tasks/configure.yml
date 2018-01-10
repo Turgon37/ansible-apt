@@ -20,6 +20,7 @@
     mode:  0644
   with_items:
     - 01proxy
+    - 01network
     - 02periodic
     - 15update-stamp
     - 15update-packages-lists

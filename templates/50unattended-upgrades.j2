@@ -51,13 +51,7 @@ Unattended-Upgrade::Package-Blacklist {
 };
 
 Unattended-Upgrade::AutoFixInterruptedDpkg "{{ macros.boolString(apt__unattended_upgrades_auto_fix_interrupted_dpkg) }}";
-
-// Split the upgrade into the smallest possible chunks so that
-// they can be interrupted with SIGUSR1. This makes the upgrade
-// a bit slower but it has the benefit that shutdown while a upgrade
-// is running is possible (with a small delay)
-//Unattended-Upgrade::MinimalSteps "true";
-
+Unattended-Upgrade::MinimalSteps "{{ macros.boolString(apt__unattended_upgrades_minimal_steps) }}";
 Unattended-Upgrade::InstallOnShutdown "{{ macros.boolString(apt__unattended_upgrades_install_on_shutdown) }}";
 
 {% if apt__unattended_upgrades_mail is defined %}
@@ -65,17 +59,11 @@ Unattended-Upgrade::Mail "{{ apt__unattended_upgrades_mail }}";
 {% endif %}
 Unattended-Upgrade::MailOnlyOnError "{{ macros.boolString(apt__unattended_upgrades_mail_only_on_error) }}";
 
-// Do automatic removal of new unused dependencies after the upgrade
-// (equivalent to apt-get autoremove)
-//Unattended-Upgrade::Remove-Unused-Dependencies "false";
+Unattended-Upgrade::Remove-Unused-Dependencies "{{ macros.boolString(apt__unattended_upgrades_remove_unused_dependencies) }}";
 
 Unattended-Upgrade::Automatic-Reboot "{{ macros.boolString(apt__unattended_upgrades_automatic_reboot) }}";
 Unattended-Upgrade::Automatic-Reboot-WithUsers "{{ macros.boolString(apt__unattended_upgrades_automatic_reboot_withusers) }}";
 Unattended-Upgrade::Automatic-Reboot-Time "{{ apt__unattended_upgrades_automatic_reboot_time }}";
-
-// Use apt bandwidth limit feature, this example limits the download
-// speed to 70kb/sec
-//Acquire::http::Dl-Limit "70";
 
 // Enable logging to syslog. Default is False
 // Unattended-Upgrade::SyslogEnable "false";
