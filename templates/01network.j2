@@ -1,0 +1,7 @@
+//
+// {{ ansible_managed }}
+//
+
+{% if apt__http_download_limit is defined %}
+Acquire::http::Dl-Limit "{{ apt__http_download_limit|int }}";
+{% endif %}
