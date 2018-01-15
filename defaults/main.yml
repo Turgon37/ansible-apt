@@ -61,6 +61,11 @@ apt__periodic_download_upgradeable_packages: False
 #      3:  + trace on
 apt__periodic_verbose: 0
 
+# The apt cron job will delay its execution by a random
+# time span between zero and 'APT::Periodic::RandomSleep' seconds.
+# Note that sleeping in the apt job will be delaying the
+# execution of all subsequent cron.daily jobs.
+apt__periodic_random_sleep: 0
 
 ## Unattended Upgrades
 # Send email to this address for problems or packages upgrades
