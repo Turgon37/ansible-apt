@@ -9,6 +9,7 @@ apt__facts: True
 
 # List of dependencies packages
 apt__packages_names:
+  - debian-keyring
   - python-apt
   - unattended-upgrades
   - apt-listchanges
