@@ -7,7 +7,7 @@
   vars:
     zabbix_agent__userparameter:
       name: apt
-      userparameter:
+      userparameters:
         - key: apt.updates
           command: >
             {%- if apt__use_cached_updates_list|bool -%}
