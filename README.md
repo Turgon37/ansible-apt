@@ -30,7 +30,7 @@ This role is available for
 
 ### Dependencies
 
-If you use the zabbix monitoring profile you will need the role [ansible-zabbix-common](https://github.com/Turgon37/ansible-zabbix-common)
+If you use the zabbix monitoring profile you will need the role [ansible-zabbix-agent](https://github.com/Turgon37/ansible-zabbix-agent)
 
 
 ## Role Variables
