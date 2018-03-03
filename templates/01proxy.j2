@@ -4,8 +4,11 @@
 
 {% if apt__proxy is defined %}
 {%   if apt__proxy['https']|d(False)|bool %}
-Acquire::https::Proxy "https://{{ apt__proxy['host'] }}:{{ apt__proxy['port']|d(3128) }}/";
+{%     set proxy = "https://{{ apt__proxy['host'] }}:{{ apt__proxy['port']|d(3128) }}/" %}
 {%   else %}
-Acquire::http::Proxy "http://{{ apt__proxy['host'] }}:{{ apt__proxy['port']|d(3128) }}/";
+{%     set proxy = "http://{{ apt__proxy['host'] }}:{{ apt__proxy['port']|d(3128) }}/" %}
 {%   endif %}
+Acquire::https::Proxy "{{ proxy }}";
+Acquire::http::Proxy "{{ proxy }}";
+Acquire::ftp::Proxy "{{ proxy }}";
 {% endif %}
