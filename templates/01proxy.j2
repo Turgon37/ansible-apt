@@ -3,11 +3,7 @@
 //
 
 {% if apt__proxy is defined %}
-{%   if apt__proxy['https']|d(False)|bool %}
-{%     set proxy = "https://{{ apt__proxy['host'] }}:{{ apt__proxy['port']|d(3128) }}/" %}
-{%   else %}
-{%     set proxy = "http://{{ apt__proxy['host'] }}:{{ apt__proxy['port']|d(3128) }}/" %}
-{%   endif %}
+{%   set proxy = ('https' if apt__proxy['https']|d(False)|bool else 'http')~'://'~apt__proxy['host']~':'~apt__proxy['port']|d(3128)~'/' %}
 Acquire::https::Proxy "{{ proxy }}";
 Acquire::http::Proxy "{{ proxy }}";
 Acquire::ftp::Proxy "{{ proxy }}";
