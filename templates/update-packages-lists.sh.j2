@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Get list of packages updates
+packages=$(/usr/bin/apt-get --just-print --option Debug::NoLocking=true upgrade --assume-no | grep --ignore-case '^inst')
+
+# Generate list of regular packages updates
+echo -n "${packages}" | grep --ignore-case --invert-match 'security' | awk '{ print $2 }' > {{ apt__cached_updates_file }}
+
+# Generate list of security packages updates
+echo -n "${packages}" | grep --ignore-case 'security' | awk '{ print $2 }' > {{ apt__cached_security_updates_file }}
+
+
+# Get list of dist packages updates
+packages=$(/usr/bin/apt-get --just-print --option Debug::NoLocking=true dist-upgrade --assume-no | grep --ignore-case '^inst')
+
+# Generate list of regular packages dist updates
+echo -n "${packages}" | grep --ignore-case --invert-match 'security' | awk '{ print $2 }' > {{ apt__cached_dist_updates_file }}
+
+# Generate list of security packages dist updates
+echo -n "${packages}" | grep --ignore-case 'security' | awk '{ print $2 }' > {{ apt__cached_security_dist_updates_file }}
+
+exit 0

@@ -11,6 +11,16 @@
     - '{{ apt__include_conf_dir }}'
     - '{{ apt__sources_list_dir }}'
 
+- name: Create custom scripts directory
+  file:
+    path:  '{{ item }}'
+    owner: root
+    group: root
+    mode:  0755
+    state: directory
+  with_items:
+    - '{{ apt__custom_scripts_directory }}'
+
 - name: Install apt configuration settings
   template:
     src:   '{{ item }}.j2'
@@ -26,6 +36,16 @@
     - 15update-packages-lists
     - 20auto-upgrades
     - 50unattended-upgrades
+
+- name: Install apt custom script
+  template:
+    src:   '{{ item }}.j2'
+    dest:  '{{ apt__custom_scripts_directory }}/{{ item }}'
+    owner: root
+    group: root
+    mode:  0755
+  with_items:
+    - update-packages-lists.sh
 
 - import_tasks: configure-keys.yml
 - import_tasks: configure-repositories.yml
