@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+{#
+    The list of available pinning options
+#}
+{%- set _pin_key_map = {
+    'archive':   'a',
+    'codename':  'n',
+    'version':   'v',
+    'component': 'c',
+    'origin':    'o',
+    'label':     'l',
+  } -%}
+{#
+    test if any of the pin option is set
+#}
+{%- set _pin_release_option_found = [] -%}
+{% for key in _pin_key_map.keys() if key in apt__pin and apt__pin[key]|length %}
+{%    set _ = _pin_release_option_found.append( _pin_key_map[key]~'='~apt__pin[key] ) %}
+{% endfor %}
+Explanation: {{ (apt__pin.explanation|d('not specified')).split('\n') | join('\nExplanation: ') }}
+Package: {{ apt__pin.package|d('*') if apt__pin.package|d('*') is string else apt__pin.package|join(' ') }}
+{% if _pin_release_option_found|length > 0 %}
+Pin: release {{ _pin_release_option_found|join(', ') }}
+{% elif apt__pin.version is defined %}
+Pin: version {{ apt__pin.version }}
+{% elif apt__pin.origin is defined %}
+Pin: origin "{{ apt__pin.origin }}"
+{% else %}
+Pin: release a={{ apt__pin.name }}
+{% endif %}
+Pin-Priority: {{ apt__pin.priority }}
