@@ -1,5 +1,6 @@
 ---
-- name: Create the directory for APT configuration
+
+- name: Create apt configuration directories
   file:
     path:  '{{ item }}'
     owner: root
@@ -8,6 +9,7 @@
     state: directory
   with_items:
     - '{{ apt__conf_dir }}'
+    - '{{ apt__preferences_dir }}'
     - '{{ apt__include_conf_dir }}'
     - '{{ apt__sources_list_dir }}'
 
@@ -29,6 +31,7 @@
     group: root
     mode:  0644
   with_items:
+    - 00config
     - 01proxy
     - 01network
     - 02periodic
@@ -49,3 +52,4 @@
 
 - import_tasks: configure-keys.yml
 - import_tasks: configure-repositories.yml
+- import_tasks: configure-preferences.yml

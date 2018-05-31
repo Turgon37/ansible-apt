@@ -7,12 +7,15 @@ apt__facts: True
 # Choose the monitoring backend to configure (if available)
 #apt__monitoring:
 
+
+### INSTALL CONFIGURATION
+# ---------------------------------------
 # List of dependencies packages
 apt__packages_names:
+  - apt-listchanges
   - debian-keyring
   - python-apt
   - unattended-upgrades
-  - apt-listchanges
 
 # Configuration file for APT
 apt__conf_dir: /etc/apt
@@ -25,16 +28,57 @@ apt__custom_scripts_directory: /opt/apt-scripts
 
 # Sources file
 apt__sources_list: '{{ apt__conf_dir }}/sources.list'
-# Sources dirs
+# Sources iists directory
 apt__sources_list_dir: '{{ apt__conf_dir }}/sources.list.d'
 
+# Preferences file
+apt__preferences: '{{ apt__conf_dir }}/preferences'
+
+# Preferences directory
+apt__preferences_dir: '{{ apt__conf_dir }}/preferences.d'
+
+
+### APT ITEMS
+# ---------------------------------------
 # List of GPG Keys to include
 apt__keys: []
 
 # List of repositories to configure
-apt__repositories: []
+
+# This list is intended to be used at global inventory level
+apt__repositories_global: []
+
+# This list is intended to be used at hostgroup inventory level
+apt__repositories_group: []
+
+# This list is intended to be used at host inventory level
+apt__repositories_host: []
+
+# Merged list of repositories
+apt__repositories: '{{ apt__repositories_global
+                        |union(apt__repositories_group)
+                        |union(apt__repositories_host) }}'
 
 
+# List of packages pinings
+
+# This list is intended to be used at global inventory level
+apt__pins_global: {}
+
+# This list is intended to be used at hostgroup inventory level
+apt__pins_group: {}
+
+# This list is intended to be used at host inventory level
+apt__pins_host: {}
+
+# Merged list of pinnings
+apt__pins: '{{ apt__pins_global
+                |combine(apt__pins_group)
+                |combine(apt__pins_host) }}'
+
+
+### APT CONFIGURATION
+# ---------------------------------------
 ## Base configuration
 # Declare a proxy for APT request
 #apt__proxy:

@@ -1,4 +1,5 @@
 ---
+
 - name: Assert required variables
   assert:
     that:
@@ -8,7 +9,7 @@
 
 - name: Configure main sources list file
   template:
-    src:   'sources.list.j2'
+    src:   sources.list.j2
     dest:  '{{ apt__sources_list }}'
     owner: root
     group: root

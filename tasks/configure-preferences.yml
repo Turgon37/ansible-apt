@@ -1,0 +1,34 @@
+---
+
+- name: Assert pinnings
+  assert:
+    that:
+      - item.key is match('^[a-zA-Z0-9._-]+$')
+  with_dict: '{{ apt__pins }}'
+
+- name: Install apt preferences settings
+  template:
+    src:   preferences.j2
+    dest:  '{{ apt__preferences }}'
+    owner: root
+    group: root
+    mode:  0644
+
+- name: Create apt pinning
+  template:
+    src:   pin.pref.j2
+    dest:  "{{ apt__preferences_dir }}/pin_{{ item.key|replace('.', '_') }}.pref"
+    owner: root
+    group: root
+    mode:  0644
+  with_dict: '{{ apt__pins }}'
+  when: item.value.state|d('present') == 'present'
+  vars:
+    apt__pin: "{{ item.value|combine({'name': item.key}) }}"
+
+- name: Remove apt pinning
+  file:
+    path:  "{{ apt__preferences_dir }}/pin_{{ item.key|replace('.', '_') }}.pref"
+    state: absent
+  with_dict: '{{ apt__pins }}'
+  when: item.value.state|d('present') != 'present'

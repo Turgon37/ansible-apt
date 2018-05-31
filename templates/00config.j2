@@ -1,0 +1,6 @@
+//
+// {{ ansible_managed }}
+//
+
+Dir::Etc::Preferences "{{ apt__preferences }}";
+Dir::Etc::PreferencesParts "{{ apt__preferences_dir }}";
