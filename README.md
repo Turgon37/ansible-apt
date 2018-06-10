@@ -2,6 +2,8 @@ Ansible Role Apt
 =========
 
 [![Build Status](https://travis-ci.org/Turgon37/ansible-apt.svg?branch=master)](https://travis-ci.org/Turgon37/ansible-apt)
+[![License](https://img.shields.io/badge/license-MIT%20License-brightgreen.svg)](https://opensource.org/licenses/MIT)
+[![Ansible Role](https://img.shields.io/badge/ansible%20role-Turgon37.apt-blue.svg)](https://galaxy.ansible.com/Turgon37/apt/)
 
 :warning: This role is under development, some important (and possibly breaking) changes may happend. Don't use it in production level environments but you can eventually base your own role on this one :hammer:
 
@@ -15,6 +17,7 @@ Currently this role provide the following features :
 
   * apt repository setting
   * apt gpg keys setting
+  * apt pinning
   * unattended upgrade configuration
   * monitoring items for
     * Zabbix
@@ -87,8 +90,8 @@ To use this role create or update your playbook according the following example 
          - apt
       vars:
         apt__repositories:
-          - name:     raspbian
-            repo:     deb http://mirrordirector.raspbian.org/raspbian/ stretch main contrib non-free rpi
+          - name: raspbian
+            repo: deb http://mirrordirector.raspbian.org/raspbian/ stretch main contrib non-free rpi
             codename: stretch
         apt__unattended_upgrades_mail: 'admin@example.com'
         apt__periodic_update_package_lists: True

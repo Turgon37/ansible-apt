@@ -1,12 +1,12 @@
 ---
 - name: Adding apt signing key
   apt_key:
-    id:             '{{ item.id|d(omit) }}'
-    file:           '{{ item.file|d(omit) }}'
-    data:           '{{ item.data|d(omit) }}'
-    keyring:        '{{ item.keyring|d(omit) }}'
-    keyserver:      '{{ item.keyserver|d(omit) }}'
-    url:            '{{ item.url|d(omit) }}'
+    id: '{{ item.id|d(omit) }}'
+    file: '{{ item.file|d(omit) }}'
+    data: '{{ item.data|d(omit) }}'
+    keyring: '{{ item.keyring|d(omit) }}'
+    keyserver: '{{ item.keyserver|d(omit) }}'
+    url: '{{ item.url|d(omit) }}'
     validate_certs: '{{ item.validate_certs|d(omit) }}'
-    state:          "{{ item.state|d('present') }}"
+    state: "{{ item.state|d('present') }}"
   with_items: "{{ apt__keys }}"

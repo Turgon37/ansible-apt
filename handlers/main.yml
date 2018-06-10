@@ -1,7 +1,7 @@
 ---
 # handlers file for apt
 
-- name: update-package-cache
+- name: update-apt-package-cache
   apt:
-    update_cache: yes
-    cache_valid_time: "{{ apt__cache_valid_time }}"
+    update_cache: true
+    cache_valid_time: '{{ apt__cache_valid_time }}'

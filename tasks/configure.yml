@@ -2,10 +2,10 @@
 
 - name: Create apt configuration directories
   file:
-    path:  '{{ item }}'
+    path: '{{ item }}'
     owner: root
     group: root
-    mode:  0755
+    mode: 0755
     state: directory
   with_items:
     - '{{ apt__conf_dir }}'
@@ -15,21 +15,21 @@
 
 - name: Create custom scripts directory
   file:
-    path:  '{{ item }}'
+    path: '{{ item }}'
     owner: root
     group: root
-    mode:  0755
+    mode: 0755
     state: directory
   with_items:
     - '{{ apt__custom_scripts_directory }}'
 
 - name: Install apt configuration settings
   template:
-    src:   '{{ item }}.j2'
-    dest:  '{{ apt__include_conf_dir }}/{{ item }}'
+    src: '{{ item }}.j2'
+    dest: '{{ apt__include_conf_dir }}/{{ item }}'
     owner: root
     group: root
-    mode:  0644
+    mode: 0644
   with_items:
     - 00config
     - 01proxy
@@ -42,11 +42,11 @@
 
 - name: Install apt custom script
   template:
-    src:   '{{ item }}.j2'
-    dest:  '{{ apt__custom_scripts_directory }}/{{ item }}'
+    src: '{{ item }}.j2'
+    dest: '{{ apt__custom_scripts_directory }}/{{ item }}'
     owner: root
     group: root
-    mode:  0755
+    mode: 0755
   with_items:
     - update-packages-lists.sh
 

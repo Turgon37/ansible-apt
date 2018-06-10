@@ -8,19 +8,19 @@
 
 - name: Install apt preferences settings
   template:
-    src:   preferences.j2
-    dest:  '{{ apt__preferences }}'
+    src: preferences.j2
+    dest: '{{ apt__preferences }}'
     owner: root
     group: root
-    mode:  0644
+    mode: 0644
 
 - name: Create apt pinning
   template:
-    src:   pin.pref.j2
-    dest:  "{{ apt__preferences_dir }}/pin_{{ item.key|replace('.', '_') }}.pref"
+    src: pin.pref.j2
+    dest: "{{ apt__preferences_dir }}/pin_{{ item.key|replace('.', '_') }}.pref"
     owner: root
     group: root
-    mode:  0644
+    mode: 0644
   with_dict: '{{ apt__pins }}'
   when: item.value.state|d('present') == 'present'
   vars:
@@ -28,7 +28,7 @@
 
 - name: Remove apt pinning
   file:
-    path:  "{{ apt__preferences_dir }}/pin_{{ item.key|replace('.', '_') }}.pref"
+    path: "{{ apt__preferences_dir }}/pin_{{ item.key|replace('.', '_') }}.pref"
     state: absent
   with_dict: '{{ apt__pins }}'
   when: item.value.state|d('present') != 'present'

@@ -2,13 +2,13 @@
 # tasks file for apt
 
 - name: Include the OS specific variables
-  include_vars: "{{ item }}"
+  include_vars: '{{ item }}'
   with_first_found:
     - files:
-        - "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
-        - "{{ ansible_distribution }}.yml"
-        - "{{ ansible_os_family }}.yml"
-        - "defaults.yml"
+        - '{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml'
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+        - defaults.yml
       skip: true
   tags: ['always']
 
@@ -17,16 +17,20 @@
     msg: 'This module only works on Debian or derivatives like Ubuntu'
   when: ansible_os_family != 'Debian'
 
-- import_tasks: install.yml
+- name: Import install tasks
+  import_tasks: install.yml
   tags: ['apt', 'apt-install']
 
-- import_tasks: configure.yml
+- name: Import configurations tasks
+  import_tasks: configure.yml
   tags: ['apt', 'apt-configure']
 
-- include_tasks: 'monitoring-{{ apt__monitoring }}.yml'
+- name: Optionally include monitoring tasks
+  include_tasks: 'monitoring/{{ apt__monitoring }}.yml'
   when: apt__monitoring is defined
   tags: ['apt', 'apt-monitoring']
 
-- include_tasks: facts.yml
+- name: Optionally include facts tasks
+  include_tasks: facts.yml
   when: apt__facts|bool
   tags: ['apt', 'apt-facts']

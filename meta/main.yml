@@ -6,12 +6,10 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
-        - 9
-        - 8
-    - name: Raspbian
-      versions:
-        - 9
-        - 8
-  galaxy_tags: []
+        - jessie
+        - stretch
+  galaxy_tags:
+    - apt
+    - aptitude
 
 dependencies: []
