@@ -14,12 +14,12 @@
     owner: root
     group: root
     mode: 0644
-
+- debug: var=apt__repositories
 - name: Adding apt repository
   apt_repository:
     repo: '{{ item.repo }}'
     codename: '{{ item.codename|d(omit) }}'
     filename: '{{ item.name|d(omit) }}'
     state: "{{ item.state|d('present') }}"
-  with_items: '{{ apt__repositories }}'
+  with_items: '{{ apt__repositories|list }}'
   notify: ['update-apt-package-cache']

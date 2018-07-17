@@ -23,7 +23,7 @@ apt__conf_dir: /etc/apt
 # Include directory for configuration
 apt__include_conf_dir: '{{ apt__conf_dir }}/apt.conf.d/'
 
-# Where to place zabbix custom scripts
+# Where to place APT custom scripts
 apt__custom_scripts_directory: /opt/apt-scripts
 
 # Sources file
