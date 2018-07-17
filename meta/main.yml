@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: apt
   author: Pierre GINDRAUD
   description: This role configure APT repos and settings
   license: MIT

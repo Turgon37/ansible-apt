@@ -7,54 +7,123 @@ Ansible Role Apt
 
 :warning: This role is under development, some important (and possibly breaking) changes may happend. Don't use it in production level environments but you can eventually base your own role on this one :hammer:
 
+## Description
+
 :grey_exclamation: Before using this role, please know that all my Ansible roles are fully written and accustomed to my IT infrastructure. So, even if they are as generic as possible they will not necessarily fill your needs, I advice you to carrefully analyse what they do and evaluate their capability to be installed securely on your servers.
 
-**This roles configure the APT common settings, APT repositories and GPG keys.**
-
-## Features
-
-Currently this role provide the following features :
-
-  * apt repository setting
-  * apt gpg keys setting
-  * apt pinning
-  * unattended upgrade configuration
-  * monitoring items for
-    * Zabbix
-  * [local facts](#facts)
+This roles configure the APT common settings, APT repositories and GPG keys.
 
 ## Requirements
 
-### OS Family
-
-This role is available for
-
-  * Debian/Raspbian 8/9
+Require Ansible >= 2.4
 
 ### Dependencies
 
 If you use the zabbix monitoring profile you will need the role [ansible-zabbix-agent](https://github.com/Turgon37/ansible-zabbix-agent)
 
+## OS Family
+
+This role is available for Debian
+
+## Features
+
+At this day the role can be used to :
+
+  * configure apt repositories
+  * install apt gpg keys
+  * create apt pinning
+  * enable unattended upgrades
+  * monitoring items for
+    * Zabbix
+  * [local facts](#facts)
 
 ## Role Variables
 
-The variables that can be passed to this role and a brief description about them are as follows:
+All variables which can be overridden are stored in [defaults/main.yml](defaults/main.yml) file as well as in table below. To see default values please refer to this file.
 
-| Name                                          | Types/Values   | Description                                                                                           |
-| ----------------------------------------------| ---------------|------------------------------------------------------------------------------------------------------ |
-| apt__facts                                    | Boolean        | Install the local fact script                                                                         |
-| apt__monitoring                               | String         | The name of the monitoring "profile" to use. Available 'zabbix')                                      |
-| apt__repositories                             | List of Dict   | see official apt_repository module                                                                    |
-| apt__keys                                     | List of Dict   | see official apt_key module                                                                           |
-| apt__proxy                                    | Dict           | Configure the http proxy for APT, format of dict  => {host: 'host', port: 8080, https: True}          |
-| apt__periodic_enabled                         | Boolean        | Enable periodic cron task for APT                                                                     |
-| apt__periodic_update_package_lists            | Integer        | If > 0, automatic apt-get update will be performed by periodic task every n-days                      |
-| apt__periodic_unattended_upgrade              | Integer        | If > 0, automatic apt-get upgrade for security updates will be performed by periodic task every n-days|
-| apt__periodic_download_upgradeable_packages   | Integer        | If > 0, automatic apt-get download will be performed by periodic task every n-days                    |
-| apt__unattended_upgrades_mail                 | String         | Specify the mail address of the recipient for report messages                                         |
-| apt__unattended_upgrades_automatic_reboot     | Boolean        | If true, automatic reboot will be performed when needed (kernel upgrade..)                            |
-| apt__unattended_upgrades_automatic_reboot_time| String         | A specific time that you allow the servers to be reboot                                               |
-| apt__unattended_upgrades_package_blacklist    | List of String | List of package name (regexp allowed) to blacklist from auto upgrade                                  |
+| Name                                            | Types/Values         | Description                                                                                            |
+| ------------------------------------------------| ---------------------|------------------------------------------------------------------------------------------------------- |
+| `apt__facts`                                    | Boolean              | Install the local fact script                                                                          |
+| `apt__monitoring`                               | String               | The name of the monitoring "profile" to use. Available 'zabbix')                                       |
+| `apt__repositories`                             | List of Dict         | see official apt_repository module                                                                     |
+| `apt__keys`                                     | List of Dict         | see official apt_key module                                                                            |
+| `apt__proxy`                                    | Dict                 | Configure the http proxy for APT, format of dict  => {host: 'host', port: 8080, https: True}           |
+| `apt__periodic_enabled`                         | Boolean              | Enable periodic cron task for APT                                                                      |
+| `apt__periodic_update_package_lists`            | Integer              | If > 0, automatic apt-get update will be performed by periodic task every n-days                       |
+| `apt__periodic_unattended_upgrade`              | Integer              | If > 0, automatic apt-get upgrade for security updates will be performed by periodic task every n-days |
+| `apt__periodic_download_upgradeable_packages`   | Integer              | If > 0, automatic apt-get download will be performed by periodic task every n-days                     |
+| `apt__unattended_upgrades_mail`                 | String               | Specify the mail address of the recipient for report messages                                          |
+| `apt__unattended_upgrades_automatic_reboot`     | Boolean              | If true, automatic reboot will be performed when needed (kernel upgrade..)                             |
+| `apt__unattended_upgrades_automatic_reboot_time`| String               | A specific time that you allow the servers to be reboot                                                |
+| `apt__unattended_upgrades_package_blacklist`    | List of String       | List of package name (regexp allowed) to blacklist from auto upgrade                                   |
+| `apt__repositories_(global/group/host)`         | List of repositories | List of repositories to configure                                                                      |
+| `apt__pins_(global/group/host)`                 | Dict of pins         | Dict of pinning configurations                                                                         |
+
+### APT pinning
+
+Each pinning configuration must follow the behavour explained in apt_preferences(5)
+
+The key of the dict represent the "name" of the pinning, it's an abstract name, it will simply be used to create the configuration file in apt preferences directory. In addition, this name let you override any pinning configuration from a level of inventory in a lower level.
+
+Each pinning must contains at least the following attributes
+
+```
+[filename]:
+  explanation: a simple string that describe the pinning usage
+  package: string/list of packages name to which the pinning will apply, default to *
+  priority: the priority integer
+```
+
+Then, in a pin configuration you can one of the three types of packages filtering, in *release, version, origin*
+
+* to pin using version
+
+```
+perl:
+  explanation: pinning on version
+  package: perl
+  priority: 100
+  version: 5.8*
+```
+
+* to pin using origin
+
+```
+all-debian:
+  explanation: pinning on origin
+  package: *
+  priority: 999
+  origin: Debian
+```
+
+* to pin using release
+
+The following keys are available, *archive (a), codename (n), release_version(v), component(c), origin(o), label (l)*
+
+```
+bc:
+  explanation: pinning on release
+  package: *
+  priority: 50
+  archive: unstable
+```
+
+By default, the name of the pinning setting is used as archive release parameter, so the two following bloc are equivalents
+
+```
+stable:
+  explanation: pinning on stable release
+  package: *
+  priority: 50
+  archive: stable
+```
+
+```
+stable:
+  explanation: pinning on stable release
+  package: *
+  priority: 50
+```
 
 ## Facts
 
@@ -78,27 +147,42 @@ ansible_local.apt:
 }
 ```
 
+## Example
 
-## Example Playbook
+### Playbook
+
+Use it in a playbook as follows:
+
+```yaml
+- hosts: all
+  roles:
+    - turgon37.apt
+```
+
+### Inventory
 
 To use this role create or update your playbook according the following example :
 
-
 ```
-    - hosts: servers
-      roles:
-         - apt
-      vars:
-        apt__repositories:
-          - name: raspbian
-            repo: deb http://mirrordirector.raspbian.org/raspbian/ stretch main contrib non-free rpi
-            codename: stretch
-        apt__unattended_upgrades_mail: 'admin@example.com'
-        apt__periodic_update_package_lists: True
-        apt__periodic_verbose: 1
+apt__repositories:
+  - name: raspbian
+    repo: deb http://mirrordirector.raspbian.org/raspbian/ stretch main contrib non-free rpi
+    codename: stretch
+apt__unattended_upgrades_mail: 'admin@example.com'
+apt__periodic_update_package_lists: True
+apt__periodic_verbose: 1
 ```
 
+* Add stable repository on an oldstable host and pin it to prevent dist-upgrade behaviour
 
-## License
-
-MIT
+```
+apt__repositories:
+  - name: raspbian
+    repo: deb http://mirrordirector.raspbian.org/raspbian/ stretch main contrib non-free rpi
+    codename: stretch
+apt__pins_host:
+  stretch:
+    explanation: Pin stretch to prevent dist-upgrade behaviour
+    codename: stretch
+    priority: 400
+```
