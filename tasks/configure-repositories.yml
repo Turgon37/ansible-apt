@@ -14,7 +14,7 @@
     owner: root
     group: root
     mode: 0644
-- debug: var=apt__repositories
+
 - name: Adding apt repository
   apt_repository:
     repo: '{{ item.repo }}'
