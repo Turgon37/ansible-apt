@@ -51,12 +51,11 @@
     group: root
     mode: 0644
   when: apt__pin.state|d('present') == 'present'
-  vars:
-    apt__pin: "{{ item.value|combine({'name': item.key}) }}"
+  tags: ['apt', 'apt-configure', 'apt-pin']
 
-- name: Remove apt pinning
+- name: 'Remove apt pinning {{ apt__pin.name }}'
   file:
-    path: "{{ apt__preferences_directory }}/pin_{{ item.key|replace('.', '_') }}.pref"
+    path: '{{ _apt__pin_path }}'
     state: absent
-  with_dict: '{{ apt__pins }}'
   when: apt__pin.state|d('present') != 'present'
+  tags: ['apt', 'apt-configure', 'apt-pin']
