@@ -13,7 +13,6 @@ platforms:
 provisioner:
   name: ansible
   options:
-    v: true
     diff: true
   lint:
     name: ansible-lint
