@@ -12,6 +12,8 @@ platforms:
     image: turgon37/docker-debian9-ansible
 provisioner:
   name: ansible
+  options:
+    diff: true
   lint:
     name: ansible-lint
 scenario:

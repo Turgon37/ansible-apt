@@ -1,0 +1,62 @@
+---
+
+- name: Check pin prerequisites
+  assert:
+    that:
+      - apt__pin is defined
+      - apt__pin.name is defined and apt__pin.name is match('^[a-zA-Z0-9._-]+$')
+      - apt__pin.state|d('present') in ['present', 'absent']
+    msg: >
+      apt__pin must be defined with specifications and
+      apt__pin.name must contains the name of the file
+  tags: ['always']
+
+- name: Init some value
+  set_fact:
+    _apt__pin_path: "{{ apt__preferences_directory }}/pin_{{ apt__pin.name|replace('.', '_') }}.pref"
+  tags: ['always']
+
+# Ensure required folder before the full apt role is applied
+
+- name: Ensure pins directories exists
+  file:
+    path: '{{ item }}'
+    state: directory
+  with_items:
+    - '{{ apt__preferences_directory }}'
+  tags: ['apt', 'apt-configure', 'apt-pin']
+
+### pin template
+
+- name: Test if pin exists
+  stat:
+    path: '{{ _apt__pin_path }}'
+  register: _apt__pin_file_stat
+  tags: ['apt', 'apt-configure', 'apt-pin']
+
+- name: Ensure temporary permissions on pin file
+  file:
+    path: '{{ _apt__pin_path }}'
+    mode: 0644
+    state: touch
+  when: apt__pin.state|d('present') == 'present'
+    and not _apt__pin_file_stat.stat.exists
+  tags: ['apt', 'apt-configure', 'apt-pin']
+
+- name: 'Create apt pinning {{ apt__pin.name }}'
+  template:
+    src: pin.pref.j2
+    dest: '{{ _apt__pin_path }}'
+    owner: root
+    group: root
+    mode: 0644
+  when: apt__pin.state|d('present') == 'present'
+  vars:
+    apt__pin: "{{ item.value|combine({'name': item.key}) }}"
+
+- name: Remove apt pinning
+  file:
+    path: "{{ apt__preferences_directory }}/pin_{{ item.key|replace('.', '_') }}.pref"
+    state: absent
+  with_dict: '{{ apt__pins }}'
+  when: apt__pin.state|d('present') != 'present'

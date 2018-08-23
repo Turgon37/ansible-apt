@@ -17,25 +17,40 @@ apt__packages_names:
   - python-apt
   - unattended-upgrades
 
+
+### APT CONFIGURATION
+# ---------------------------------------
+# This key is put into each included configuration file
+# to means that this role manage it
+# if purge (see below) is enable this key will be used to
+# exclude managed files from purge
+apt__ansible_managed_key: __ANSIBLE__APT__
+
+# Set to true to purge unwanted included conf files
+apt__conf_purge: false
+
+# Set to true to purge unwanted included preferences files
+apt__preferences_purge: false
+
 # Configuration file for APT
-apt__conf_dir: /etc/apt
+apt__conf_directory: /etc/apt
 
 # Include directory for configuration
-apt__include_conf_dir: '{{ apt__conf_dir }}/apt.conf.d/'
+apt__include_conf_directory: '{{ apt__conf_directory }}/apt.conf.d/'
 
 # Where to place APT custom scripts
 apt__custom_scripts_directory: /opt/apt-scripts
 
 # Sources file
-apt__sources_list: '{{ apt__conf_dir }}/sources.list'
+apt__sources_list: '{{ apt__conf_directory }}/sources.list'
 # Sources iists directory
-apt__sources_list_dir: '{{ apt__conf_dir }}/sources.list.d'
+apt__sources_list_directory: '{{ apt__conf_directory }}/sources.list.d'
 
 # Preferences file
-apt__preferences: '{{ apt__conf_dir }}/preferences'
+apt__preferences: '{{ apt__conf_directory }}/preferences'
 
 # Preferences directory
-apt__preferences_dir: '{{ apt__conf_dir }}/preferences.d'
+apt__preferences_directory: '{{ apt__conf_directory }}/preferences.d'
 
 
 ### APT ITEMS

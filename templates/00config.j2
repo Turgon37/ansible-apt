@@ -1,6 +1,7 @@
-//
-// {{ ansible_managed }}
-//
+{{ ansible_managed|comment(decoration='// ') }}
+
+// this key prevent purge from ansible apt role
+{{ apt__ansible_managed_key|string|comment(decoration='//') }}
 
 Dir::Etc::Preferences "{{ apt__preferences }}";
-Dir::Etc::PreferencesParts "{{ apt__preferences_dir }}";
+Dir::Etc::PreferencesParts "{{ apt__preferences_directory }}";

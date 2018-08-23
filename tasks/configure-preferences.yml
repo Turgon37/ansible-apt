@@ -1,11 +1,5 @@
 ---
 
-- name: Assert pinnings
-  assert:
-    that:
-      - item.key is match('^[a-zA-Z0-9._-]+$')
-  with_dict: '{{ apt__pins }}'
-
 - name: Install apt preferences settings
   template:
     src: preferences.j2
@@ -14,21 +8,35 @@
     group: root
     mode: 0644
 
-- name: Create apt pinning
-  template:
-    src: pin.pref.j2
-    dest: "{{ apt__preferences_dir }}/pin_{{ item.key|replace('.', '_') }}.pref"
-    owner: root
-    group: root
-    mode: 0644
-  with_dict: '{{ apt__pins }}'
-  when: item.value.state|d('present') == 'present'
-  vars:
-    apt__pin: "{{ item.value|combine({'name': item.key}) }}"
+- name: List installed apt preferences
+  find:
+    paths: '{{ apt__preferences_directory }}'
+    file_type: file
+  register: _apt__installed_preferences_files
 
-- name: Remove apt pinning
+# purge feature
+
+- name: List ansible managed apt preferences
+  find:
+    paths: '{{ apt__preferences_directory }}'
+    file_type: file
+    contains: '#{{ apt__ansible_managed_key }}'
+  when: apt__preferences_purge|bool
+  register: _apt__managed_preferences_files
+
+- name: Remove unknown installed apt preferences
   file:
-    path: "{{ apt__preferences_dir }}/pin_{{ item.key|replace('.', '_') }}.pref"
+    path: '{{ item }}'
     state: absent
+  with_items:
+    "{{ _apt__installed_preferences_files.files|map(attribute='path')
+        |difference(_apt__managed_preferences_files.files|map(attribute='path'))|list }}"
+  when: apt__preferences_purge|bool
+
+- name: Create apt pinnings
+  include_tasks: types/pin.yml
+  vars:
+    apt__pin: "{{ outer_item.value|combine({'name': outer_item.key}) }}"
   with_dict: '{{ apt__pins }}'
-  when: item.value.state|d('present') != 'present'
+  loop_control:
+    loop_var: outer_item
