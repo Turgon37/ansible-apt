@@ -8,10 +8,10 @@
     mode: 0755
     state: directory
   with_items:
-    - '{{ apt__conf_dir }}'
-    - '{{ apt__preferences_dir }}'
-    - '{{ apt__include_conf_dir }}'
-    - '{{ apt__sources_list_dir }}'
+    - '{{ apt__conf_directory }}'
+    - '{{ apt__preferences_directory }}'
+    - '{{ apt__include_conf_directory }}'
+    - '{{ apt__sources_list_directory }}'
 
 - name: Create custom scripts directory
   file:
@@ -23,10 +23,35 @@
   with_items:
     - '{{ apt__custom_scripts_directory }}'
 
+- name: List installed apt confs
+  find:
+    paths: '{{ apt__include_conf_directory }}'
+    file_type: file
+  register: _apt__installed_conf_files
+
+# purge feature
+
+- name: List ansible managed apt confs
+  find:
+    paths: '{{ apt__include_conf_directory }}'
+    file_type: file
+    contains: '//{{ apt__ansible_managed_key }}'
+  when: apt__conf_purge|bool
+  register: _apt__managed_conf_files
+
+- name: Remove unknown installed apt confs
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    "{{ _apt__installed_conf_files.files|map(attribute='path')
+        |difference(_apt__managed_conf_files.files|map(attribute='path'))|list }}"
+  when: apt__conf_purge|bool
+
 - name: Install apt configuration settings
   template:
     src: '{{ item }}.j2'
-    dest: '{{ apt__include_conf_dir }}/{{ item }}'
+    dest: '{{ apt__include_conf_directory }}/{{ item }}'
     owner: root
     group: root
     mode: 0644

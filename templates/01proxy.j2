@@ -1,6 +1,7 @@
-//
-// {{ ansible_managed }}
-//
+{{ ansible_managed|comment(decoration='// ') }}
+
+// this key prevent purge from ansible apt role
+{{ apt__ansible_managed_key|string|comment(decoration='//') }}
 
 {% if apt__proxy is defined %}
 {%   set proxy = ('https' if apt__proxy['https']|d(False)|bool else 'http')~'://'~apt__proxy['host']~':'~apt__proxy['port']|d(3128)~'/' %}

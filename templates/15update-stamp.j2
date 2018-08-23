@@ -1,5 +1,6 @@
-//
-// {{ ansible_managed }}
-//
+{{ ansible_managed|comment(decoration='// ') }}
+
+// this key prevent purge from ansible apt role
+{{ apt__ansible_managed_key|string|comment(decoration='//') }}
 
 APT::Update::Post-Invoke-Success {"touch {{ apt__update_stamp_file }} 2>/dev/null || true";};
