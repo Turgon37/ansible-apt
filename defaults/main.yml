@@ -29,6 +29,9 @@ apt__ansible_managed_key: __ANSIBLE__APT__
 # Set to true to purge unwanted included conf files
 apt__conf_purge: false
 
+# List of file basename to remove from APT configs
+apt__conf_remove_files: []
+
 # Set to true to purge unwanted included preferences files
 apt__preferences_purge: false
 
@@ -109,10 +112,10 @@ apt__pins: '{{ apt__pins_global
 apt__periodic_enabled: true
 
 # Do "apt-get update" automatically every n-days (0=disable)
-apt__periodic_update_package_lists: false
+apt__periodic_update_package_lists: 0
 
 # Run the "unattended-upgrade" security upgrade script every n-days (0=disabled)
-apt__periodic_unattended_upgrade: false
+apt__periodic_unattended_upgrade: 0
 
 # Do "apt-get upgrade --download-only" every n-days (0=disable)
 apt__periodic_download_upgradeable_packages: false
