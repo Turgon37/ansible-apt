@@ -36,8 +36,6 @@
     paths: '{{ apt__include_conf_directory }}'
     file_type: file
     contains: '//{{ apt__ansible_managed_key }}'
-  when: apt__conf_purge|bool
-    or apt__conf_remove_files|length
   register: _apt__managed_conf_files
 
 - name: Remove unknown installed apt confs
