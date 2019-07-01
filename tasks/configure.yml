@@ -1,6 +1,6 @@
 ---
 
-- name: Create apt configuration directories
+- name: Create apt directories
   file:
     path: '{{ item }}'
     owner: root
@@ -8,72 +8,14 @@
     mode: 0755
     state: directory
   with_items:
-    - '{{ apt__conf_directory }}'
+    - '{{ apt__configuration_directory }}'
+    - '{{ apt__configuration_include_directory }}'
     - '{{ apt__preferences_directory }}'
-    - '{{ apt__include_conf_directory }}'
     - '{{ apt__sources_list_directory }}'
-
-- name: Create custom scripts directory
-  file:
-    path: '{{ item }}'
-    owner: root
-    group: root
-    mode: 0755
-    state: directory
-  with_items:
     - '{{ apt__custom_scripts_directory }}'
+    - '{{ apt__variable_directory }}'
 
-- name: List installed apt confs
-  find:
-    paths: '{{ apt__include_conf_directory }}'
-    file_type: file
-  register: _apt__installed_conf_files
-
-# purge feature
-
-- name: List ansible managed apt confs
-  find:
-    paths: '{{ apt__include_conf_directory }}'
-    file_type: file
-    contains: '//{{ apt__ansible_managed_key }}'
-  register: _apt__managed_conf_files
-
-- name: Remove unknown installed apt confs
-  file:
-    path: '{{ item }}'
-    state: absent
-  with_items:
-    "{{ _apt__installed_conf_files.files|map(attribute='path')
-        |difference(_apt__managed_conf_files.files|map(attribute='path'))|list }}"
-  when: apt__conf_purge|bool
-
-- name: Remove unwanted apt confs
-  file:
-    path: '{{ item }}'
-    state: absent
-  with_items:
-    "{{ _apt__installed_conf_files.files|map(attribute='path')
-        |difference(_apt__managed_conf_files.files|map(attribute='path'))|list }}"
-  when: item|basename in apt__conf_remove_files
-
-- name: Install apt configuration settings
-  template:
-    src: '{{ item }}.j2'
-    dest: '{{ apt__include_conf_directory }}/{{ item }}'
-    owner: root
-    group: root
-    mode: 0644
-  with_items:
-    - 00config
-    - 01proxy
-    - 01network
-    - 02periodic
-    - 15update-stamp
-    - 15update-packages-lists
-    - 20auto-upgrades
-    - 50unattended-upgrades
-
-- name: Install apt custom script
+- name: Install apt custom scripts
   template:
     src: '{{ item }}.j2'
     dest: '{{ apt__custom_scripts_directory }}/{{ item }}'
@@ -83,6 +25,30 @@
   with_items:
     - update-packages-lists.sh
 
-- import_tasks: configure-keys.yml
-- import_tasks: configure-repositories.yml
-- import_tasks: configure-preferences.yml
+- name: Install apt configuration
+  template:
+    src: apt.conf.j2
+    dest: '{{ apt__configuration_file }}'
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Update apt listchanges configuration
+  template:
+    src: listchanges.conf.j2
+    dest: '{{ apt__listchanges_configuration_file }}'
+    owner: root
+    group: root
+    mode: 0644
+
+- name:
+  import_tasks: configure-settings.yml
+
+- name:
+  import_tasks: configure-keys.yml
+
+- name:
+  import_tasks: configure-repositories.yml
+
+- name:
+  import_tasks: configure-preferences.yml

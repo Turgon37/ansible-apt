@@ -1,0 +1,8 @@
+{{ ansible_managed|comment(decoration='// ') }}
+
+Dir::Etc::main "{{ apt__configuration_file }}";
+Dir::Etc::parts "{{ apt__configuration_include_directory }}";
+Dir::Etc::preferences "{{ apt__preferences }}";
+Dir::Etc::preferencesparts "{{ apt__preferences_directory }}";
+Dir::Etc::sourcelist "{{ apt__sources_list }}";
+Dir::Etc::sourceparts "{{ apt__sources_list_directory }}";

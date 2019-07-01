@@ -8,8 +8,8 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
-        - jessie
-        - stretch
+        - 8
+        - 9
   galaxy_tags:
     - apt
     - aptitude

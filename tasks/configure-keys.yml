@@ -1,4 +1,5 @@
 ---
+
 - name: Adding apt signing key
   apt_key:
     id: '{{ item.id|d(omit) }}'
@@ -9,4 +10,4 @@
     url: '{{ item.url|d(omit) }}'
     validate_certs: '{{ item.validate_certs|d(omit) }}'
     state: "{{ item.state|d('present') }}"
-  with_items: "{{ apt__keys }}"
+  with_items: '{{ apt__keys }}'
