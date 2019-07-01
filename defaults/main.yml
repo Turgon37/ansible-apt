@@ -44,9 +44,9 @@ apt__configurations_purge_whitelist_host: []
 
 # Merged dict of configurations
 apt__configurations_purge_whitelist: '{{ apt__configurations_purge_whitelist_default
-                        |union(apt__configurations_whitelist_purge_global)
-                        |union(apt__configurations_whitelist_purge_group)
-                        |union(apt__configurations_whitelist_purge_host)
+                        |union(apt__configurations_purge_whitelist_global)
+                        |union(apt__configurations_purge_whitelist_group)
+                        |union(apt__configurations_purge_whitelist_host)
                         |unique|list }}'
 
 
