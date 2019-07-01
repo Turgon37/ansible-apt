@@ -208,7 +208,6 @@ apt__configurations: '{{ apt__configurations_default
                         |combine(apt__configurations_host) }}'
 
 
-
 # List of repositories to configure
 
 # This list is intended to be used at global inventory level
