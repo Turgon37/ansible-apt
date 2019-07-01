@@ -2,6 +2,5 @@
 
 - name: Install apt packages
   package:
-    name: '{{ item }}'
+    name: '{{ apt__packages_names|list }}'
     state: present
-  with_items: '{{ apt__packages_names }}'

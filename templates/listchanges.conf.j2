@@ -1,0 +1,16 @@
+{{ ansible_managed|comment(decoration='# ') }}
+{% set _sections = {} %}
+{% for key, value in apt__listchanges_configurations|dictsort %}
+{%   set _section = key.split('.')[0] %}
+{%   set _option = key.split('.')[1] %}
+{%   if _section not in _sections %}
+{%     set _ = _sections.update({_section: {}}) %}
+{%   endif %}
+{%   set _ = _sections[_section].update({_option: value}) %}
+{% endfor %}
+{% for section, options in _sections|dictsort %}
+[{{ section }}]
+{%   for option, value in options|dictsort %}
+{{ option }}={{ value }}
+{%   endfor %}
+{% endfor %}

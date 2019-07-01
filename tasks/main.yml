@@ -17,20 +17,20 @@
     msg: 'This module only works on Debian or derivatives like Ubuntu'
   when: ansible_os_family != 'Debian'
 
-- name: Import install tasks
+- name: Importing install tasks
   import_tasks: install.yml
   tags: ['apt', 'apt-install']
 
-- name: Import configurations tasks
+- name: Importing configuration tasks
   import_tasks: configure.yml
   tags: ['apt', 'apt-configure']
 
-- name: Optionally include monitoring tasks
+- name: Optionally including monitoring tasks
   include_tasks: 'monitoring/{{ apt__monitoring }}.yml'
   when: apt__monitoring is defined
   tags: ['apt', 'apt-monitoring']
 
-- name: Optionally include facts tasks
+- name: Optionally including facts tasks
   include_tasks: facts.yml
   when: apt__facts|bool
   tags: ['apt', 'apt-facts']

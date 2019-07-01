@@ -1,9 +1,0 @@
-{%- import '_macros.j2' as macros with context -%}
-{{ ansible_managed|comment(decoration='// ') }}
-
-// this key prevent purge from ansible apt role
-{{ apt__ansible_managed_key|string|comment(decoration='//') }}
-
-APT::Periodic::Enable "{{ macros.boolNumeric(apt__periodic_enabled) }}";
-APT::Periodic::Verbose "{{ apt__periodic_verbose }}";
-APT::Periodic::RandomSleep "{{ apt__periodic_random_sleep|int }}";

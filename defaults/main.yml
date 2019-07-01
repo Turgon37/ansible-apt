@@ -27,39 +27,186 @@ apt__packages_names:
 apt__ansible_managed_key: __ANSIBLE__APT__
 
 # Set to true to purge unwanted included conf files
-apt__conf_purge: false
+apt__configurations_purge: false
 
-# List of file basename to remove from APT configs
-apt__conf_remove_files: []
+# List of configuration filenames to exclude from purge
+apt__configurations_whitelist:
+  - 01autoremove-kernels
 
 # Set to true to purge unwanted included preferences files
 apt__preferences_purge: false
 
 # Configuration file for APT
-apt__conf_directory: /etc/apt
+apt__configuration_directory: /etc/apt
+
+# Main configuration file
+apt__configuration_file: '{{ apt__configuration_directory }}/apt.conf'
 
 # Include directory for configuration
-apt__include_conf_directory: '{{ apt__conf_directory }}/apt.conf.d/'
+apt__configuration_include_directory: '{{ apt__configuration_directory }}/apt.conf.d'
 
 # Where to place APT custom scripts
 apt__custom_scripts_directory: /opt/apt-scripts
 
 # Sources file
-apt__sources_list: '{{ apt__conf_directory }}/sources.list'
+apt__sources_list: '{{ apt__configuration_directory }}/sources.list'
 # Sources iists directory
-apt__sources_list_directory: '{{ apt__conf_directory }}/sources.list.d'
+apt__sources_list_directory: '{{ apt__configuration_directory }}/sources.list.d'
 
 # Preferences file
-apt__preferences: '{{ apt__conf_directory }}/preferences'
+apt__preferences: '{{ apt__configuration_directory }}/preferences'
 
 # Preferences directory
-apt__preferences_directory: '{{ apt__conf_directory }}/preferences.d'
+apt__preferences_directory: '{{ apt__configuration_directory }}/preferences.d'
+
+# Directory which contains variable files
+apt__variable_directory: /var/lib/apt
 
 
 ### APT ITEMS
 # ---------------------------------------
 # List of GPG Keys to include
 apt__keys: []
+
+# List of custom APT configurations
+
+# Default configurations for APT
+apt__configurations_default:
+  00cdrom:
+    content: |-
+      Acquire::cdrom {
+        mount "/media/cdrom";
+      };
+      Dir::Media::MountPath "/media/cdrom";
+      APT::Authentication::TrustCDROM "true";
+  01autoremove:
+    content: |-
+      APT::NeverAutoRemove {
+        "^firmware-linux.*";
+        "^linux-firmware$";
+      };
+
+      APT::VersionedKernelPackages {
+        # linux kernels
+        "linux-image";
+        "linux-headers";
+        "linux-image-extra";
+        "linux-signed-image";
+        # kfreebsd kernels
+        "kfreebsd-image";
+        "kfreebsd-headers";
+        # hurd kernels
+        "gnumach-image";
+        # (out-of-tree) modules
+        ".*-modules";
+        ".*-kernel";
+        "linux-backports-modules-.*";
+        # tools
+        "linux-tools";
+      };
+
+      APT::Never-MarkAuto-Sections {
+        "metapackages";
+        "contrib/metapackages";
+        "non-free/metapackages";
+        "restricted/metapackages";
+        "universe/metapackages";
+        "multiverse/metapackages";
+      };
+
+      APT::Move-Autobit-Sections {
+        "oldlibs";
+        "contrib/oldlibs";
+        "non-free/oldlibs";
+        "restricted/oldlibs";
+        "universe/oldlibs";
+        "multiverse/oldlibs";
+      };
+  01network:
+    content: |-
+      {% if apt__http_download_limit is defined %}
+      Acquire::http::Dl-Limit "{{ apt__http_download_limit|int }}";
+      {% endif %}
+  01proxy:
+    content: |-
+      {% if apt__proxy is defined %}
+      {%   set proxy = ('https' if apt__proxy['https']|d(False)|bool else 'http')~'://'~apt__proxy['host']~':'~apt__proxy['port']|d(3128)~'/' %}
+      Acquire::https::Proxy "{{ proxy }}";
+      Acquire::http::Proxy "{{ proxy }}";
+      Acquire::ftp::Proxy "{{ proxy }}";
+      {% endif %}
+  02periodic:
+    content: |-
+      APT::Periodic::Enable "{{ apt__periodic_enabled|bool|ternary('1', '0') }}";
+      APT::Periodic::Verbose "{{ apt__periodic_verbose }}";
+      APT::Periodic::RandomSleep "{{ apt__periodic_random_sleep|int }}";
+  15update-stamp:
+    content: |-
+      APT::Update::Post-Invoke-Success {"touch {{ apt__update_stamp_file }} 2>/dev/null || true";};
+  15update-packages-lists:
+    content: |-
+      {% if apt__use_cached_updates_list|bool %}
+      APT::Update::Post-Invoke-Success {"{{ apt__custom_scripts_directory }}/update-packages-lists.sh || true";};
+      {% endif %}
+  20auto-upgrades:
+    content: |-
+      APT::Periodic::Update-Package-Lists "{{ apt__periodic_update_package_lists|int }}";
+      APT::Periodic::Unattended-Upgrade "{{ apt__periodic_unattended_upgrade|int }}";
+      APT::Periodic::Download-Upgradeable-Packages "{{ apt__periodic_download_upgradeable_packages|int }}";
+  20listchanges:
+    content: |-
+      {% if apt__listchanges_enabled|bool %}
+      DPkg::Pre-Install-Pkgs { "/usr/bin/apt-listchanges --apt || test $? -lt 10"; };
+      DPkg::Tools::Options::/usr/bin/apt-listchanges::Version "2";
+      DPkg::Tools::Options::/usr/bin/apt-listchanges::InfoFD "20";
+      {% endif %}
+  50unattended-upgrades:
+    content: |-
+      Unattended-Upgrade::Origins-Pattern {
+      {% for pattern in apt__unattended_upgrades_origins_patterns|list %}
+        "{{ pattern }}";
+      {% endfor %}
+      };
+      Unattended-Upgrade::Package-Blacklist {
+      {% for package in apt__unattended_upgrades_package_blacklist|list %}
+        "{{ package }}";
+      {% endfor %}
+      };
+      Unattended-Upgrade::AutoFixInterruptedDpkg "{{ apt__unattended_upgrades_auto_fix_interrupted_dpkg|bool|ternary('true', 'false') }}";
+      Unattended-Upgrade::MinimalSteps "{{ apt__unattended_upgrades_minimal_steps|bool|ternary('true', 'false') }}";
+      Unattended-Upgrade::InstallOnShutdown "{{ apt__unattended_upgrades_install_on_shutdown|bool|ternary('true', 'false') }}";
+
+      {% if apt__unattended_upgrades_mail is defined %}
+      Unattended-Upgrade::Mail "{{ apt__unattended_upgrades_mail }}";
+      {% endif %}
+      Unattended-Upgrade::MailOnlyOnError "{{ apt__unattended_upgrades_mail_only_on_error|bool|ternary('true', 'false') }}";
+
+      Unattended-Upgrade::Remove-Unused-Dependencies "{{ apt__unattended_upgrades_remove_unused_dependencies|bool|ternary('true', 'false') }}";
+      Unattended-Upgrade::Automatic-Reboot "{{ apt__unattended_upgrades_automatic_reboot|bool|ternary('true', 'false') }}";
+      Unattended-Upgrade::Automatic-Reboot-WithUsers "{{ apt__unattended_upgrades_automatic_reboot_withusers|bool|ternary('true', 'false') }}";
+      Unattended-Upgrade::Automatic-Reboot-Time "{{ apt__unattended_upgrades_automatic_reboot_time }}";
+      Unattended-Upgrade::SyslogEnable "{{ apt__unattended_upgrades_syslog_enabled|bool|ternary('true', 'false') }}";
+      Unattended-Upgrade::SyslogFacility "{{ apt__unattended_upgrades_syslog_facility }}";
+  70debconf:
+    content: |-
+      DPkg::Pre-Install-Pkgs {"/usr/sbin/dpkg-preconfigure --apt || true";};
+
+
+# This dict is intended to be used at global inventory level
+apt__configurations_global: {}
+
+# This dict is intended to be used at hostgroup inventory level
+apt__configurations_group: {}
+
+# This dict is intended to be used at host inventory level
+apt__configurations_host: {}
+
+# Merged dict of configurations
+apt__configurations: '{{ apt__configurations_default
+                        |combine(apt__configurations_global)
+                        |combine(apt__configurations_group)
+                        |combine(apt__configurations_host) }}'
+
 
 # List of repositories to configure
 
@@ -133,6 +280,7 @@ apt__periodic_verbose: 0
 # execution of all subsequent cron.daily jobs.
 apt__periodic_random_sleep: 0
 
+
 ## Unattended Upgrades
 # Send email to this address for problems or packages upgrades
 # apt__unattended_upgrades_mail: ''
@@ -171,13 +319,53 @@ apt__unattended_upgrades_automatic_reboot_time: now
 # This will (obviously) make shutdown slower
 apt__unattended_upgrades_install_on_shutdown: false
 
+# List of packages origin to update
+apt__unattended_upgrades_origins_patterns:
+  - 'origin=Debian,codename=${distro_codename},label=Debian-Security'
+
 # List of packages to not update (regexp are supported)
 apt__unattended_upgrades_package_blacklist: []
+
+# Enable logs into syslog
+apt__unattended_upgrades_syslog_enabled: false
+
+# Syslog facility
+apt__unattended_upgrades_syslog_facility: daemon
+
+
+## List changes
+# Enable or not the apt listchange feature
+apt__listchanges_enabled: false
+
+# Main configuration file of apt listchanges
+apt__listchanges_configuration_file: '{{ apt__configuration_directory }}/listchanges.conf'
+
+# Apt list changes configurations
+apt__listchanges_configurations_default:
+  apt.frontend: pager
+  apt.email_address: root
+  apt.save_seen: '{{ apt__variable_directory }}/listchanges.db'
+  cmdline.frontend: pager
+
+# This dict is intended to be used at global inventory level
+apt__listchanges_configurations_global: {}
+
+# This dict is intended to be used at hostgroup inventory level
+apt__listchanges_configurations_group: {}
+
+# This dict is intended to be used at host inventory level
+apt__listchanges_configurations_host: {}
+
+# Merged dict of configurations
+apt__listchanges_configurations: '{{ apt__listchanges_configurations_default
+                        |combine(apt__listchanges_configurations_global)
+                        |combine(apt__listchanges_configurations_group)
+                        |combine(apt__listchanges_configurations_host) }}'
 
 
 ## Misc
 # Path to the stamp file to update after each update
-apt__update_stamp_file: /var/lib/apt/periodic/update-success-stamp
+apt__update_stamp_file: '{{ apt__variable_directory }}/periodic/update-success-stamp'
 
 # If true, each apt-get update will generated cached list of package in files
 # and each tols like facts,
@@ -189,13 +377,13 @@ apt__use_cached_updates_list: true
 apt__cached_updates_file: /var/lib/apt/periodic/packages-updates
 # Path to the file which contains availabes packaes security updates
 apt__cached_security_updates_file:
-  /var/lib/apt/periodic/packages-security-updates
+  '{{ apt__variable_directory }}/periodic/packages-security-updates'
 
 # Path to the file which contains availables packages updates
-apt__cached_dist_updates_file: /var/lib/apt/periodic/packages-dist-updates
+apt__cached_dist_updates_file: '{{ apt__variable_directory }}/periodic/packages-dist-updates'
 # Path to the file which contains availabes packaes security updates
 apt__cached_security_dist_updates_file:
-  /var/lib/apt/periodic/packages-security-dist-updates
+  '{{ apt__variable_directory }}/periodic/packages-security-dist-updates'
 
 # Default cache valid time for update operations
 apt__cache_valid_time: 3600

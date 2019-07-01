@@ -27,10 +27,12 @@ This role is available for Debian
 
 At this day the role can be used to :
 
+  * configure apt settings (in conf.d)
   * configure apt repositories
   * install apt gpg keys
   * create apt pinning
   * enable unattended upgrades
+  * configure listchanges
   * monitoring items for
     * Zabbix
   * [local facts](#facts)
@@ -169,6 +171,29 @@ apt__repositories:
 apt__unattended_upgrades_mail: 'admin@example.com'
 apt__periodic_update_package_lists: True
 apt__periodic_verbose: 1
+```
+
+* Specify custom configuration
+
+```
+apt__configurations_global:
+  70recommends:
+    content: |-
+      APT::Install-Recommends "1";
+      APT::Install-Suggests "0";
+  80no-languages:
+    content: |-
+      Acquire::Languages "none";
+```
+
+* Configure listchanges settings
+
+```
+apt__listchanges_enabled: true
+apt__listchanges_configurations_global:
+  apt.confirm: 'true'
+  apt.email_address: '{{ email_admin }}'
+  apt.which: changelogs
 ```
 
 * Add stable repository on an oldstable host and pin it to prevent dist-upgrade behaviour

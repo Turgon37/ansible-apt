@@ -1,9 +1,0 @@
-{%- import '_macros.j2' as macros with context -%}
-{{ ansible_managed|comment(decoration='// ') }}
-
-// this key prevent purge from ansible apt role
-{{ apt__ansible_managed_key|string|comment(decoration='//') }}
-
-APT::Periodic::Update-Package-Lists "{{ apt__periodic_update_package_lists|int }}";
-APT::Periodic::Unattended-Upgrade "{{ apt__periodic_unattended_upgrade|int }}";
-APT::Periodic::Download-Upgradeable-Packages "{{ apt__periodic_download_upgradeable_packages|int }}";
