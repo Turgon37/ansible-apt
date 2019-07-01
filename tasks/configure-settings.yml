@@ -28,7 +28,7 @@
     )
     |list }}"
   when: apt__configurations_purge|bool
-    and item|basename not in apt__configurations_whitelist
+    and item|basename not in apt__configurations_purge_whitelist
 
 - name: Create apt settings
   include_tasks: types/setting.yml

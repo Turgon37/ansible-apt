@@ -30,8 +30,25 @@ apt__ansible_managed_key: __ANSIBLE__APT__
 apt__configurations_purge: false
 
 # List of configuration filenames to exclude from purge
-apt__configurations_whitelist:
+apt__configurations_purge_whitelist_default:
   - 01autoremove-kernels
+
+# This dict is intended to be used at global inventory level
+apt__configurations_purge_whitelist_global: []
+
+# This dict is intended to be used at hostgroup inventory level
+apt__configurations_purge_whitelist_group: []
+
+# This dict is intended to be used at host inventory level
+apt__configurations_purge_whitelist_host: []
+
+# Merged dict of configurations
+apt__configurations_purge_whitelist: '{{ apt__configurations_purge_whitelist_default
+                        |union(apt__configurations_purge_whitelist_global)
+                        |union(apt__configurations_purge_whitelist_group)
+                        |union(apt__configurations_purge_whitelist_host)
+                        |unique|list }}'
+
 
 # Set to true to purge unwanted included preferences files
 apt__preferences_purge: false
