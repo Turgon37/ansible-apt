@@ -43,12 +43,13 @@ apt__configurations_purge_whitelist_group: []
 apt__configurations_purge_whitelist_host: []
 
 # Merged dict of configurations
-apt__configurations_purge_whitelist: '{{ apt__configurations_purge_whitelist_default
-                        |union(apt__configurations_purge_whitelist_global)
-                        |union(apt__configurations_purge_whitelist_group)
-                        |union(apt__configurations_purge_whitelist_host)
-                        |unique|list }}'
-
+apt__configurations_purge_whitelist: '{{
+    apt__configurations_purge_whitelist_default
+    |union(apt__configurations_purge_whitelist_global)
+    |union(apt__configurations_purge_whitelist_group)
+    |union(apt__configurations_purge_whitelist_host)
+    |unique|list
+  }}'
 
 # Set to true to purge unwanted included preferences files
 apt__preferences_purge: false
@@ -219,11 +220,12 @@ apt__configurations_group: {}
 apt__configurations_host: {}
 
 # Merged dict of configurations
-apt__configurations: '{{ apt__configurations_default
-                        |combine(apt__configurations_global)
-                        |combine(apt__configurations_group)
-                        |combine(apt__configurations_host) }}'
-
+apt__configurations: '{{
+    apt__configurations_default
+    |combine(apt__configurations_global)
+    |combine(apt__configurations_group)
+    |combine(apt__configurations_host)
+  }}'
 
 # List of repositories to configure
 
@@ -237,9 +239,11 @@ apt__repositories_group: []
 apt__repositories_host: []
 
 # Merged list of repositories
-apt__repositories: '{{ apt__repositories_global
-                        |union(apt__repositories_group)
-                        |union(apt__repositories_host) }}'
+apt__repositories: '{{
+    apt__repositories_global
+    |union(apt__repositories_group)
+    |union(apt__repositories_host)
+  }}'
 
 
 # List of packages pinings
@@ -254,9 +258,11 @@ apt__pins_group: {}
 apt__pins_host: {}
 
 # Merged list of pinnings
-apt__pins: '{{ apt__pins_global
-                |combine(apt__pins_group)
-                |combine(apt__pins_host) }}'
+apt__pins: '{{
+    apt__pins_global
+    |combine(apt__pins_group)
+    |combine(apt__pins_host)
+  }}'
 
 
 ### APT CONFIGURATION
@@ -270,6 +276,7 @@ apt__pins: '{{ apt__pins_global
 
 # Limit APT bandwidth to this speed (in kBytes/sec)
 # apt__http_download_limit: 0
+
 
 ## Periodic cron task
 # Enable the update/upgrade script (0=disable)
@@ -374,10 +381,12 @@ apt__listchanges_configurations_group: {}
 apt__listchanges_configurations_host: {}
 
 # Merged dict of configurations
-apt__listchanges_configurations: '{{ apt__listchanges_configurations_default
-                        |combine(apt__listchanges_configurations_global)
-                        |combine(apt__listchanges_configurations_group)
-                        |combine(apt__listchanges_configurations_host) }}'
+apt__listchanges_configurations: '{{
+    apt__listchanges_configurations_default
+    |combine(apt__listchanges_configurations_global)
+    |combine(apt__listchanges_configurations_group)
+    |combine(apt__listchanges_configurations_host)
+  }}'
 
 
 ## Misc
