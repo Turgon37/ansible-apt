@@ -2,6 +2,12 @@
 
 Items starting with `DEPRECATE` are important deprecation notices.
 
+## 2.2.0 (2019-09-26)
+
++ Add UnattendedUpgrade whitelist option
++ Split UnattendedUpgrade lists into separated files
++ Add cache backup options
+
 ## 2.1.0 (2019-07-02)
 
 + Rename apt__configurations_whitelist into apt__configurations_purge_whitelist
