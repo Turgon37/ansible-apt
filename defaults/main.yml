@@ -200,17 +200,14 @@ apt__configurations_default:
         "{{ pattern }}";
       {% endfor %}
       };
-      Unattended-Upgrade::Package-Blacklist {
-      {% for package in apt__unattended_upgrades_package_blacklist|list %}
-        "{{ package }}";
-      {% endfor %}
-      };
+
       Unattended-Upgrade::AutoFixInterruptedDpkg "{{ apt__unattended_upgrades_auto_fix_interrupted_dpkg|bool|ternary('true', 'false') }}";
       Unattended-Upgrade::MinimalSteps "{{ apt__unattended_upgrades_minimal_steps|bool|ternary('true', 'false') }}";
       Unattended-Upgrade::InstallOnShutdown "{{ apt__unattended_upgrades_install_on_shutdown|bool|ternary('true', 'false') }}";
 
       {% if apt__unattended_upgrades_mail is defined %}
       Unattended-Upgrade::Mail "{{ apt__unattended_upgrades_mail }}";
+      Unattended-Upgrade::Sender "{{ apt__unattended_upgrades_mail_sender }}";
       {% endif %}
       Unattended-Upgrade::MailOnlyOnError "{{ apt__unattended_upgrades_mail_only_on_error|bool|ternary('true', 'false') }}";
 
@@ -220,6 +217,21 @@ apt__configurations_default:
       Unattended-Upgrade::Automatic-Reboot-Time "{{ apt__unattended_upgrades_automatic_reboot_time }}";
       Unattended-Upgrade::SyslogEnable "{{ apt__unattended_upgrades_syslog_enabled|bool|ternary('true', 'false') }}";
       Unattended-Upgrade::SyslogFacility "{{ apt__unattended_upgrades_syslog_facility }}";
+  50unattended-upgrades-whitelist:
+    content: |-
+      Unattended-Upgrade::Package-Whitelist-Strict "{{ apt__unattended_upgrades_package_whitelist_strict|bool|ternary('true', 'false') }}";
+      Unattended-Upgrade::Package-Whitelist {
+      {% for package in apt__unattended_upgrades_package_whitelist|list %}
+        "{{ package }}";
+      {% endfor %}
+      };
+  50unattended-upgrades-blacklist:
+    content: |-
+      Unattended-Upgrade::Package-Blacklist {
+      {% for package in apt__unattended_upgrades_package_blacklist|list %}
+        "{{ package }}";
+      {% endfor %}
+      };
   70debconf:
     content: |-
       DPkg::Pre-Install-Pkgs {"/usr/sbin/dpkg-preconfigure --apt || true";};
@@ -317,6 +329,7 @@ apt__periodic_verbose: 0
 # time span between zero and 'APT::Periodic::RandomSleep' seconds.
 # Note that sleeping in the apt job will be delaying the
 # execution of all subsequent cron.daily jobs.
+# NOTE : not used on systemd because timer already include a random delay
 apt__periodic_random_sleep: 0
 
 
@@ -354,6 +367,9 @@ apt__periodic_backup_level: 3
 # Send email to this address for problems or packages upgrades
 # apt__unattended_upgrades_mail: ''
 
+# Use the specified value in the "From" field of outgoing mails.
+apt__unattended_upgrades_mail_sender: 'root@{{ ansible_fqdn }}'
+
 # Set this value to "true" to get emails only on errors.
 apt__unattended_upgrades_mail_only_on_error: false
 
@@ -388,12 +404,28 @@ apt__unattended_upgrades_automatic_reboot_time: now
 # This will (obviously) make shutdown slower
 apt__unattended_upgrades_install_on_shutdown: false
 
-# List of packages origin to update
+# List of packages "origin" and "archive" to update.
+# These are taken respectively from the Origin and Suite fields of the repository's Release file,
+#  or can be found in the output of: apt-cache policy
+#  to get the "o" and "a" fields for the given repository.
 apt__unattended_upgrades_origins_patterns:
   - 'origin=Debian,codename=${distro_codename},label=Debian-Security'
 
-# List of packages to not update (regexp are supported)
+# No packages that match the regular expressions in this list will be marked for upgrade
+# If a package A has a blacklisted package B as a dependency then both packages A and B will not be upgraded
+# All regexp will be considered with a '^' at the beginning
+# Note you may need to escape special characters like "+" as "\+".
 apt__unattended_upgrades_package_blacklist: []
+
+# By default dependencies of whitelisted packages are allowed.
+# This can be changed to only ever allow whitelisted packages
+# This means that you also need to list all the dependencies of a whitelisted package.
+apt__unattended_upgrades_package_whitelist_strict: true
+
+# Only packages that match the regular expressions in this list will be marked for upgrade
+# All regexp will be considered with a '^' at the beginning
+# Note you may need to escape special characters like "+" as "\+".
+apt__unattended_upgrades_package_whitelist: []
 
 # Enable logs into syslog
 apt__unattended_upgrades_syslog_enabled: false
