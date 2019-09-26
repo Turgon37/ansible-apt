@@ -80,6 +80,12 @@ apt__preferences_directory: '{{ apt__configuration_directory }}/preferences.d'
 # Directory which contains variable files
 apt__variable_directory: /var/lib/apt
 
+# Directory which contains cache files
+apt__cache_directory: /var/cache/apt
+
+# Directory where apt store cache backups
+apt__backup_directory: '{{ apt__cache_directory }}/backups'
+
 
 ### APT ITEMS
 # ---------------------------------------
@@ -158,6 +164,15 @@ apt__configurations_default:
       APT::Periodic::Enable "{{ apt__periodic_enabled|bool|ternary('1', '0') }}";
       APT::Periodic::Verbose "{{ apt__periodic_verbose }}";
       APT::Periodic::RandomSleep "{{ apt__periodic_random_sleep|int }}";
+      APT::Periodic::MaxAge "{{ apt__periodic_max_age|int }}";
+      APT::Periodic::MinAge "{{ apt__periodic_min_age|int }}";
+      APT::Periodic::MaxSize "{{ apt__periodic_max_size|int }}";
+      APT::Periodic::AutocleanInterval "{{ apt__periodic_autoclean_interval|int }}";
+      APT::Periodic::CleanInterval "{{ apt__periodic_clean_interval|int }}";
+  02periodic-backup:
+    content: |-
+      APT::Periodic::BackupArchiveInterval "{{ apt__periodic_backup_interval|int }}";
+      APT::Periodic::BackupLevel "{{ apt__periodic_backup_level|int }}";
   15update-stamp:
     content: |-
       APT::Update::Post-Invoke-Success {"touch {{ apt__update_stamp_file }} 2>/dev/null || true";};
@@ -303,6 +318,36 @@ apt__periodic_verbose: 0
 # Note that sleeping in the apt job will be delaying the
 # execution of all subsequent cron.daily jobs.
 apt__periodic_random_sleep: 0
+
+
+## Cleaning
+# Set maximum allowed age of a cache package file. If a cache
+# package file is older it is deleted (0=disable)
+apt__periodic_max_age: 0
+
+# Set minimum age of a package file. If a file is younger it
+# will not be deleted (0=disable). Usefull to prevent races
+# and to keep backups of the packages for emergency.
+apt__periodic_min_age: 2
+
+# Set maximum size of the cache in MB (0=disable). If the cache
+# is bigger, cached package files are deleted until the size
+# requirement is met (the biggest packages will be deleted first)
+apt__periodic_max_size: 0
+
+# Do "apt-get autoclean" every n-days (0=disable)
+apt__periodic_autoclean_interval: 30
+
+# Do "apt-get clean" every n-days (0=disable)
+apt__periodic_clean_interval: 0
+
+
+## Backup
+# Backup after n-days if archive contents changed.(0=disable)
+apt__periodic_backup_interval: 0
+
+# Backup level.(0=disable), 1 is invalid.
+apt__periodic_backup_level: 3
 
 
 ## Unattended Upgrades

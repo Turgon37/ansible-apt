@@ -6,3 +6,6 @@ Dir::Etc::preferences "{{ apt__preferences }}";
 Dir::Etc::preferencesparts "{{ apt__preferences_directory }}";
 Dir::Etc::sourcelist "{{ apt__sources_list }}";
 Dir::Etc::sourceparts "{{ apt__sources_list_directory }}";
+
+Dir::Cache "{{ apt__cache_directory }}";
+Dir::Cache::Backup "{{ apt__backup_directory }}";
