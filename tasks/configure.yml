@@ -43,14 +43,14 @@
     group: root
     mode: 0644
 
-- name:
+- name: Importing apt settings tasks
   import_tasks: configure-settings.yml
 
-- name:
+- name: Importing apt keys tasks
   import_tasks: configure-keys.yml
 
-- name:
+- name: Importing apt repositories tasks
   import_tasks: configure-repositories.yml
 
-- name:
+- name: Importing apt preferences tasks
   import_tasks: configure-preferences.yml
