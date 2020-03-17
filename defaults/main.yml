@@ -14,7 +14,7 @@ apt__facts: true
 apt__packages_names:
   - apt-listchanges
   - debian-keyring
-  - python-apt
+  - 'python{{ python__version_major|d(3) }}-apt'
   - unattended-upgrades
 
 
