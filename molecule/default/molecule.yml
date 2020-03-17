@@ -3,13 +3,12 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint:
-  name: yamllint
 platforms:
   - name: debian8
     image: turgon37/docker-debian8-ansible
   - name: debian9
     image: turgon37/docker-debian9-ansible
+lint: yamllint .
 provisioner:
   name: ansible
   options:
