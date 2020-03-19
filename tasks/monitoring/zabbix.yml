@@ -11,8 +11,8 @@
         - key: apt.updates
           command: >
             {%- if apt__use_cached_updates_list|bool -%}
-            /bin/bash -c "
-            test -f {{ apt__cached_updates_file }}
+            /bin/bash -c
+            "test -f {{ apt__cached_updates_file }}
             && wc -l < {{ apt__cached_updates_file }}
             || echo -n 'ZBX_NOTSUPPORTED'"
             {%- else -%}
@@ -25,8 +25,8 @@
         - key: apt.security_updates
           command: >
             {% if apt__use_cached_updates_list|bool %}
-            /bin/bash -c "
-            test -f {{ apt__cached_security_updates_file }}
+            /bin/bash -c
+            "test -f {{ apt__cached_security_updates_file }}
             && wc -l < {{ apt__cached_security_updates_file }}
             || echo -n 'ZBX_NOTSUPPORTED'"
             {% else %}
@@ -35,5 +35,18 @@
             | grep --ignore-case --count '^inst.*security' | tr -d '\n'
             {% endif %}
           comment: packages number that need security updates
+        - key: apt.unneeded_packages
+          command: >
+            {% if apt__use_cached_updates_list|bool %}
+            /bin/bash -c
+            "test -f {{ apt__cached_unneeded_packages_file }}
+            && wc -l < {{ apt__cached_unneeded_packages_file }}
+            || echo -n 'ZBX_NOTSUPPORTED'"
+            {% else %}
+            /usr/bin/apt-get --just-print
+            --option Debug::NoLocking=true autoremove --assume-no
+            | grep --ignore-case --count '^Remv' | tr -d '\n'
+            {% endif %}
+          comment: unneeded packages number
       state: present
   tags: ['apt', 'apt-monitoring']

@@ -47,6 +47,7 @@ All variables which can be overridden are stored in [defaults/main.yml](defaults
 | `apt__use_cached_updates_list`                            | Boolean               | If true, apt will produce files with packages that require update after each apt-update operation     |
 | `apt__monitoring`                                         | String                | The name of the monitoring "profile" to use. Available 'zabbix')                                      |
 | `apt__repositories`                                       | List of Dict          | see official apt_repository module                                                                    |
+| `apt__repositories_purge`                                 | Boolean               | If true, all non ansible managed repositories will be removed                                         |
 | `apt__keys`                                               | List of Dict          | see official apt_key module                                                                           |
 | `apt__proxy`                                              | Dict                  | Configure the http proxy for APT, format of dict  => {host: 'host', port: 8080, https: True}          |
 | `apt__periodic_enabled`                                   | Boolean               | Enable periodic cron task for APT                                                                     |

@@ -2,6 +2,17 @@
 
 Items starting with `DEPRECATE` are important deprecation notices.
 
+## 2.3.0 (2020-03-17)
+
++ Update APT::NeverAutoRemove configuration
++ Add repositories purge
++ Add unneeded packages list
+
++ Use python3 by default in fact and packages
++ Factorize function call in facts script
++ Fix command output encoding in facts script
++ Update molecule configuration for CI
+
 ## 2.2.0 (2019-09-26)
 
 + Add UnattendedUpgrade whitelist option

@@ -13,10 +13,12 @@ content={
   'packages_dist_updates' : [],
   'packages_security_updates': [],
   'packages_security_dist_updates': [],
+  'packages_unneeded' : [],
   'updates' : None,
   'dist_updates' : None,
   'security_updates': None,
-  'security_dist_updates': None
+  'security_dist_updates': None,
+  'unneeded_packages': None
 }
 
 # Regexp that match package names
@@ -30,40 +32,63 @@ reg_debian_security_update = re.compile('|'.join([
     '\sgNewSense[^\s]+-security\s'
 ]))
 
+# Regexp that match unneeded package names
+reg_debian_unneeded_package_name = re.compile('^Remv\s(?P<name>[a-zA-Z0-9_\.-]+)\s')
 
-def is_exe(fpath):
-    """Test if the given file exist and is executable
+def getFileLines(path):
+    """Open a file and return its lines
+
+    Args:
+        path: the file path
+    Returns:
+        the file content as lines array
     """
-    return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+    if not os.path.isfile(path):
+        content['error'] = '{} file not available'.format(path)
+        return []
+    try:
+        with open(path, 'r') as f:
+            return list(map(lambda s:s.strip(), f.readlines()))
+    except IOError as e:
+        content['error'] = str(e)
+        return []
+
+def getSubprocessLines(cmd):
+    """Execute the given command and return output as lines array
+
+    Args:
+        cmd: the argv
+    Returns:
+        output as list of string
+    """
+    if not (os.path.isfile(cmd[0]) and os.access(cmd[0], os.X_OK)):
+        content['error'] = '{} command not available'.format(cmd[0])
+        return []
+    try:
+        with open(os.devnull, 'w') as devnull:
+            result = subprocess.check_output(cmd, stderr=devnull, universal_newlines=True)
+    except subprocess.CalledProcessError as e:
+        content['error'] = str(e)
+        return []
+    return list(map(lambda s:s.strip(), result.splitlines()))
 
 def setUpgradablesPackages(cmd, update_regexp, security_update_regexp=None, key='updates'):
     """Compute upgradable package for the given distribution
     """
-    if not is_exe(cmd[0]):
-        content['error'] = cmd[0] + ' not available'
-        return
-    try:
 {% if apt__use_cached_updates_list|bool %}
-        update_file_name = '{{ apt__cached_updates_file }}' if key == 'updates' else '{{ apt__cached_dist_updates_file }}'
-        with open(update_file_name, 'r') as f:
-            content['packages_'+key] = map(lambda s:s.strip(), f.readlines())
-        security_update_file_name = '{{ apt__cached_security_updates_file }}' if key == 'updates' else '{{ apt__cached_security_dist_updates_file }}'
-        with open(security_update_file_name, 'r') as f:
-            content['packages_security_'+key] = map(lambda s:s.strip(), f.readlines())
+    update_file_name = '{{ apt__cached_updates_file }}' if key == 'updates' else '{{ apt__cached_dist_updates_file }}'
+    content['packages_'+key] = getFileLines(update_file_name)
+
+    security_update_file_name = '{{ apt__cached_security_updates_file }}' if key == 'updates' else '{{ apt__cached_security_dist_updates_file }}'
+    content['packages_security_'+key] = getFileLines(security_update_file_name)
 {% else %}
-        with open(os.devnull, 'w') as devnull:
-            result = subprocess.check_output(cmd, stderr=devnull)
-        for line in result.splitlines():
+    for line in getSubprocessLines(cmd):
         match = update_regexp.match(line)
         if match:
             content['packages_'+key].append(match.group('name'))
             if security_update_regexp and security_update_regexp.search(line):
                 content['packages_security_'+key].append(match.group('name'))
 {% endif %}
-    except (subprocess.CalledProcessError,IOError) as e:
-        content['error'] = str(e)
-        return
-
     # Compute some another stats on lists
     content[key] = len(content['packages_'+key])
     content['security_'+key] = len(content['packages_security_'+key])
@@ -86,14 +111,24 @@ if __name__ == '__main__':
     else:
         content['update_last_success'] = -1
     # UPDATES
-    setUpgradablesPackages(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'upgrade',  '--assume-no'],
+    setUpgradablesPackages(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'upgrade', '--assume-no'],
                             reg_debian_package_name,
                             reg_debian_security_update)
     # DIST UPDATES
-    setUpgradablesPackages(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'dist-upgrade',  '--assume-no'],
+    setUpgradablesPackages(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'dist-upgrade', '--assume-no'],
                             reg_debian_package_name,
                             reg_debian_security_update,
                             'dist_updates')
+    # UNNEEDED PACKAGES
+{% if apt__use_cached_updates_list|bool %}
+    content['packages_unneeded'] = getFileLines('{{ apt__cached_unneeded_packages_file }}')
+{% else %}
+    for line in getSubprocessLines(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'autoremove', '--assume-no']):
+        match = reg_debian_unneeded_package_name.match(line)
+        if match:
+            content['packages_unneeded'].append(match.group('name'))
+{% endif %}
+    content['unneeded_packages'] = len(content['packages_unneeded'])
 
     print(json.dumps(content))
     sys.exit(0)

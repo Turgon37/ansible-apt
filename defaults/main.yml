@@ -108,6 +108,8 @@ apt__configurations_default:
       APT::NeverAutoRemove {
         "^firmware-linux.*";
         "^linux-firmware$";
+        "^linux-image-[a-z0-9]*$";
+        "^linux-image-[a-z0-9]*-[a-z0-9]*$";
       };
 
       APT::VersionedKernelPackages {
@@ -253,6 +255,10 @@ apt__configurations: '{{
     |combine(apt__configurations_group)
     |combine(apt__configurations_host)
   }}'
+
+
+# Set to true to purge unwanted repositories files
+apt__repositories_purge: false
 
 # List of repositories to configure
 
@@ -487,6 +493,9 @@ apt__cached_dist_updates_file: '{{ apt__variable_directory }}/periodic/packages-
 # Path to the file which contains availabes packaes security updates
 apt__cached_security_dist_updates_file:
   '{{ apt__variable_directory }}/periodic/packages-security-dist-updates'
+
+# Path to the file which can be autoremoved
+apt__cached_unneeded_packages_file: '{{ apt__variable_directory }}/periodic/packages-unneeded'
 
 # Default cache valid time for update operations
 apt__cache_valid_time: 3600
