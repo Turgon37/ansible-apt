@@ -11,8 +11,8 @@
         - key: apt.updates
           command: >
             {%- if apt__use_cached_updates_list|bool -%}
-            /bin/bash -c "
-            test -f {{ apt__cached_updates_file }}
+            /bin/bash -c
+            "test -f {{ apt__cached_updates_file }}
             && wc -l < {{ apt__cached_updates_file }}
             || echo -n 'ZBX_NOTSUPPORTED'"
             {%- else -%}
@@ -25,8 +25,8 @@
         - key: apt.security_updates
           command: >
             {% if apt__use_cached_updates_list|bool %}
-            /bin/bash -c "
-            test -f {{ apt__cached_security_updates_file }}
+            /bin/bash -c
+            "test -f {{ apt__cached_security_updates_file }}
             && wc -l < {{ apt__cached_security_updates_file }}
             || echo -n 'ZBX_NOTSUPPORTED'"
             {% else %}
