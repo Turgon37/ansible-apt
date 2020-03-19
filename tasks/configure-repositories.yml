@@ -24,6 +24,7 @@
 # purge feature
 
 - name: Remove unknown installed repositories
+  # noqa 104
   file:
     path: '{{ item }}'
     state: absent
