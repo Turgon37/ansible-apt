@@ -13,10 +13,12 @@ content={
   'packages_dist_updates' : [],
   'packages_security_updates': [],
   'packages_security_dist_updates': [],
+  'packages_unneeded' : [],
   'updates' : None,
   'dist_updates' : None,
   'security_updates': None,
-  'security_dist_updates': None
+  'security_dist_updates': None,
+  'unneeded_packages': None
 }
 
 # Regexp that match package names
@@ -29,6 +31,9 @@ reg_debian_security_update = re.compile('|'.join([
     '\sUbuntu[^\s]+-security\s',
     '\sgNewSense[^\s]+-security\s'
 ]))
+
+# Regexp that match unneeded package names
+reg_debian_unneeded_package_name = re.compile('^Remv\s(?P<name>[a-zA-Z0-9_\.-]+)\s')
 
 def getFileLines(path):
     """Open a file and return its lines
@@ -114,6 +119,16 @@ if __name__ == '__main__':
                             reg_debian_package_name,
                             reg_debian_security_update,
                             'dist_updates')
+    # UNNEEDED PACKAGES
+{% if apt__use_cached_updates_list|bool %}
+    content['packages_unneeded'] = getFileLines('{{ apt__cached_unneeded_packages_file }}')
+{% else %}
+    for line in getSubprocessLines(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'autoremove', '--assume-no']):
+        match = reg_debian_unneeded_package_name.match(line)
+        if match:
+            content['packages_unneeded'].append(match.group('name'))
+{% endif %}
+    content['unneeded_packages'] = len(content['packages_unneeded'])
 
     print(json.dumps(content))
     sys.exit(0)
