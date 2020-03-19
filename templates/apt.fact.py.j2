@@ -84,7 +84,6 @@ def setUpgradablesPackages(cmd, update_regexp, security_update_regexp=None, key=
             if security_update_regexp and security_update_regexp.search(line):
                 content['packages_security_'+key].append(match.group('name'))
 {% endif %}
-
     # Compute some another stats on lists
     content[key] = len(content['packages_'+key])
     content['security_'+key] = len(content['packages_security_'+key])
@@ -107,11 +106,11 @@ if __name__ == '__main__':
     else:
         content['update_last_success'] = -1
     # UPDATES
-    setUpgradablesPackages(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'upgrade',  '--assume-no'],
+    setUpgradablesPackages(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'upgrade', '--assume-no'],
                             reg_debian_package_name,
                             reg_debian_security_update)
     # DIST UPDATES
-    setUpgradablesPackages(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'dist-upgrade',  '--assume-no'],
+    setUpgradablesPackages(['/usr/bin/apt-get', '--just-print', '--option', 'Debug::NoLocking=true', 'dist-upgrade', '--assume-no'],
                             reg_debian_package_name,
                             reg_debian_security_update,
                             'dist_updates')
