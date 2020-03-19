@@ -254,6 +254,10 @@ apt__configurations: '{{
     |combine(apt__configurations_host)
   }}'
 
+
+# Set to true to purge unwanted repositories files
+apt__repositories_purge: false
+
 # List of repositories to configure
 
 # This list is intended to be used at global inventory level

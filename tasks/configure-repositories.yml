@@ -15,6 +15,29 @@
     group: root
     mode: 0644
 
+- name: List installed repositories
+  find:
+    paths: '{{ apt__sources_list_directory }}'
+    file_type: file
+  register: _apt__installed_repositories_files
+
+# purge feature
+
+- name: Remove unknown installed repositories
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items: "\
+    {% set to_remove = [] -%}
+    {% set to_keep = apt__repositories|map(attribute='name')|list -%}
+    {% for path in _apt__installed_repositories_files.files|map(attribute='path')|list -%}
+    {%   if path|basename|replace('.list', '') not in to_keep -%}
+    {%     set _ = to_remove.append(path) -%}
+    {%   endif -%}
+    {% endfor -%}
+    {{ to_remove }}"
+  when: apt__repositories_purge|bool
+
 - name: Adding apt repository
   apt_repository:
     repo: '{{ item.repo }}'
