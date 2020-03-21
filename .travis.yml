@@ -25,3 +25,4 @@ notifications:
   webhooks:
     urls: ['https://galaxy.ansible.com/api/v1/notifications/']
     if: 'branch = master OR tag IS present'
+    on_failure: never
