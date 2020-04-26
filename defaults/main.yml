@@ -18,6 +18,11 @@ apt__packages_names:
   - unattended-upgrades
 
 
+### APT MONITORING
+# Periodic prometheus apt job frequency (systemd timer syntax)
+apt__monitoring_prometheus_timer_frequency: 15m
+
+
 ### APT CONFIGURATION
 # ---------------------------------------
 # This key is put into each included configuration file

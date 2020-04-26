@@ -17,7 +17,7 @@
     - '{{ apt__cache_directory }}'
     - '{{ apt__backup_directory }}'
 
-- name: Install apt custom scripts
+- name: Install apt templated scripts
   template:
     src: '{{ item }}.j2'
     dest: '{{ apt__custom_scripts_directory }}/{{ item }}'
