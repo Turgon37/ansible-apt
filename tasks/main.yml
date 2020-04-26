@@ -25,9 +25,12 @@
   import_tasks: configure.yml
   tags: ['apt', 'apt-configure']
 
-- name: Optionally including monitoring tasks
-  include_tasks: 'monitoring/{{ apt__monitoring }}.yml'
+- name: Optionally importing monitoring tasks
+  include_tasks: 'monitoring/{{ monitoring_backend }}.yml'
+  with_items: '{{ [apt__monitoring]|flatten|unique|list }}'
   when: apt__monitoring is defined
+  loop_control:
+    loop_var: monitoring_backend
   tags: ['apt', 'apt-monitoring']
 
 - name: Optionally including facts tasks

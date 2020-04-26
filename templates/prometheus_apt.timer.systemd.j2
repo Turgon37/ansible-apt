@@ -1,0 +1,9 @@
+[Unit]
+Description=Run apt metrics collection every 15 minutes
+
+[Timer]
+OnBootSec=0
+OnUnitActiveSec={{ apt__monitoring_prometheus_timer_frequency }}
+
+[Install]
+WantedBy=timers.target

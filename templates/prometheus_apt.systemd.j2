@@ -1,0 +1,7 @@
+[Unit]
+Description=Collect apt metrics for prometheus-node-exporter
+ConditionPathIsDirectory={{ node_exporter__textfile_directory|d('/var/lib/node_exporter') }}
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c "{{ apt__custom_scripts_directory }}/prometheus.apt.sh | sponge {{ node_exporter__textfile_directory|d('/var/lib/node_exporter') }}/apt.prom"

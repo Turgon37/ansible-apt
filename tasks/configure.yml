@@ -26,6 +26,16 @@
     mode: 0755
   with_items:
     - update-packages-lists.sh
+    - prometheus.apt.sh
+
+- name: Install apt custom scripts
+  copy:
+    src: '{{ item }}'
+    dest: '{{ apt__custom_scripts_directory }}/{{ item }}'
+    owner: root
+    group: root
+    mode: 0755
+  with_items: []
 
 - name: Install apt configuration
   template:

@@ -1,0 +1,64 @@
+---
+
+- name: Install additionnals packages for prometheus monitoring
+  package:
+    name:
+      - moreutils
+    state: present
+  tags: ['apt', 'apt-monitoring']
+
+- name: Set cron task instead of systemd timer
+  cron:
+    name: 'apt__prometheus'
+    cron_file: apt__ansible
+    job: >-
+      test -d {{ node_exporter__textfile_directory|d('/var/lib/node_exporter') }}
+      && {{ apt__custom_scripts_directory }}/prometheus.apt.sh | sponge {{ node_exporter__textfile_directory|d('/var/lib/node_exporter') }}/apt.prom
+    user: root
+    minute: "{{
+        '*/'~apt__monitoring_prometheus_timer_frequency|regex_replace('[^0-9]', '')
+        if 'm' in apt__monitoring_prometheus_timer_frequency
+        else omit }}"
+    hour: "{{
+        '*/'~apt__monitoring_prometheus_timer_frequency|regex_replace('[^0-9]', '')
+        if 'h' in apt__monitoring_prometheus_timer_frequency
+        else omit }}"
+  when: ansible_service_mgr != 'systemd'
+    and apt__monitoring_prometheus_timer_frequency is regex('^[0-9]+(m|h)$')
+  tags: ['apt', 'apt-monitoring']
+
+- name: Install prometheus-node-exporter-apt systemd service unit file
+  template:
+    src: prometheus_apt.systemd.j2
+    dest: /etc/systemd/system/prometheus-node-exporter-apt.service
+    owner: root
+    group: root
+    mode: 0640
+  when: ansible_service_mgr == 'systemd'
+  register: _apt__prometheus_service_systemd
+  tags: ['apt', 'apt-monitoring']
+
+- name: Install prometheus-node-exporter-apt systemd timer unit file
+  template:
+    src: prometheus_apt.timer.systemd.j2
+    dest: /etc/systemd/system/prometheus-node-exporter-apt.timer
+    owner: root
+    group: root
+    mode: 0640
+  when: ansible_service_mgr == 'systemd'
+  register: _apt__prometheus_timer_systemd
+  tags: ['apt', 'apt-monitoring']
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: true
+  when: _apt__prometheus_service_systemd is changed
+    or _apt__prometheus_timer_systemd is changed
+  changed_when: true
+  tags: ['apt', 'apt-monitoring']
+
+- name: Ensure prometheus-node-exporter-apt.timer is started and enabled on boot
+  service:
+    name: prometheus-node-exporter-apt.timer
+    enabled: true
+  tags: ['apt', 'apt-monitoring']
