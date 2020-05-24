@@ -17,7 +17,12 @@ Require Ansible >= 2.4
 
 ### Dependencies
 
-If you use the zabbix monitoring profile you will need the role [ansible-zabbix-agent](https://github.com/Turgon37/ansible-zabbix-agent)
+* roles
+
+| Name                                                                                   | Description                                  |
+| -------------------------------------------------------------------------------------- | -------------------------------------------- |
+| [ansible-zabbix-agent](https://github.com/Turgon37/ansible-zabbix-agent)               | If you use the zabbix monitoring profile     |
+| [ansible-prometheus-exporter](https://github.com/Turgon37/ansible-prometheus-exporter) | If you use the prometheus monitoring profile |
 
 ## OS Family
 
@@ -35,6 +40,7 @@ At this day the role can be used to :
   * configure listchanges
   * monitoring items for
     * Zabbix
+    * Prometheus
   * [local facts](#facts)
 
 ## Role Variables

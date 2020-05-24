@@ -2,6 +2,11 @@
 
 Items starting with `DEPRECATE` are important deprecation notices.
 
+## 2.4.0 (2020-04-26)
+
++ Add job to produce node_exporter metrics regularly
++ Add needrestart
+
 ## 2.3.0 (2020-03-17)
 
 + Update APT::NeverAutoRemove configuration
