@@ -45,7 +45,7 @@
     group: root
     mode: 0644
 
-- name: Update apt listchanges configuration
+- name: Configure apt listchanges
   template:
     src: listchanges.conf.j2
     dest: '{{ apt__listchanges_configuration_file }}'
