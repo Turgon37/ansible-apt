@@ -9,10 +9,10 @@
   vars:
     repositories:
       Debian:
-          - name: debian
-            repo: >
-              deb 'http://deb.debian.org/debian/ {{ ansible_distribution_release }} main contrib non-free'
-            codename: '{{ ansible_distribution_release }}'
+        - name: debian
+          repo: >
+            deb 'http://deb.debian.org/debian/ {{ ansible_distribution_release }} main contrib non-free'
+          codename: '{{ ansible_distribution_release }}'
 
     # Get host repository according to facts
     apt__repositories: '{{
