@@ -1,9 +1,11 @@
 ---
-- name: Run role
+- name: Converge
   hosts: all
   any_errors_fatal: true
-  roles:
-    - role: ansible-apt
+  tasks:
+    - name: "Include turgon37.apt"
+      include_role:
+        name: "ansible-apt"
   vars:
     repositories:
       Debian:
