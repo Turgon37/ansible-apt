@@ -14,6 +14,7 @@ apt__facts: true
 apt__packages_names:
   - apt-listchanges
   - debian-keyring
+  - needrestart
   - 'python{{ python__version_major|d(3) }}-apt'
   - unattended-upgrades
 
@@ -242,6 +243,11 @@ apt__configurations_default:
   70debconf:
     content: |-
       DPkg::Pre-Install-Pkgs {"/usr/sbin/dpkg-preconfigure --apt || true";};
+  99needrestart:
+    content: |-
+      {% if apt__needrestart_enabled|bool %}
+      DPkg::Post-Invoke {"test -x /usr/lib/needrestart/apt-pinvoke && /usr/lib/needrestart/apt-pinvoke || true"; };
+      {% endif %}
 
 
 # This dict is intended to be used at global inventory level
@@ -475,6 +481,26 @@ apt__listchanges_configurations: '{{
     |combine(apt__listchanges_configurations_group)
     |combine(apt__listchanges_configurations_host)
   }}'
+
+
+## Needrestart
+# Enable or not the apt listchange feature
+apt__needrestart_enabled: false
+
+# Main configuration file of apt listchanges
+apt__needrestart_configuration_file: /etc/needrestart/conf.d/ansible.conf
+
+# Verbosity:
+#  0 => quiet
+#  1 => normal (default)
+#  2 => verbose
+apt__needrestart_verbosity: 1
+
+# Restart mode: (l)ist only, (i)nteractive or (a)utomatically.
+apt__needrestart_mode: i
+
+# Change default answer to 'no' in (i)nteractive mode.
+apt__needrestart_defno: 0
 
 
 ## Misc

@@ -25,6 +25,15 @@ else
   echo 'apt_upgrades_pending{origin="",arch=""} 0'
 fi
 
+if command -v needrestart >/dev/null; then
+  restart="$(needrestart -b -rl | grep -c 'NEEDRESTART-SVC:')"
+else
+  restart=0
+fi
+echo '# HELP node_restart_required Node services restart is required for software updates.'
+echo '# TYPE node_restart_required gauge'
+echo "node_restart_required ${restart}"
+
 echo '# HELP node_reboot_required Node reboot is required for software updates.'
 echo '# TYPE node_reboot_required gauge'
 if [[ -f '/run/reboot-required' ]] ; then

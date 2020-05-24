@@ -1,0 +1,4 @@
+{{ ansible_managed|comment(decoration='# ') }}
+$nrconf{verbosity} = {{ apt__needrestart_verbosity|int }};
+$nrconf{restart} = '{{ apt__needrestart_mode }}';
+$nrconf{defno} = {{ apt__needrestart_defno|int }};

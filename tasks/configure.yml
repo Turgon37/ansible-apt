@@ -53,6 +53,14 @@
     group: root
     mode: 0644
 
+- name: Configure needrestart
+  template:
+    src: needrestart.conf.j2
+    dest: '{{ apt__needrestart_configuration_file }}'
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Importing apt settings tasks
   import_tasks: configure-settings.yml
 
