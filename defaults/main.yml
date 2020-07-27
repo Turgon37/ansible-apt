@@ -500,7 +500,60 @@ apt__needrestart_verbosity: 1
 apt__needrestart_mode: i
 
 # Change default answer to 'no' in (i)nteractive mode.
-apt__needrestart_defno: 0
+apt__needrestart_defno: false
+
+# Enable interpreter scanners.
+apt__needrestart_interpscan: true
+
+# Blacklist binaries (list of regex).
+apt__needrestart_blacklist_global: []
+apt__needrestart_blacklist_group: []
+apt__needrestart_blacklist_host: []
+apt__needrestart_blacklist: '{{
+    apt__needrestart_blacklist_global
+    |union(apt__needrestart_blacklist_group)
+    |union(apt__needrestart_blacklist_host)
+  }}'
+
+# Ignore script files matching these regexs:
+apt__needrestart_blacklist_interp_global: []
+apt__needrestart_blacklist_interp_group: []
+apt__needrestart_blacklist_interp_host: []
+apt__needrestart_blacklist_interp: '{{
+    apt__needrestart_blacklist_interp_global
+    |union(apt__needrestart_blacklist_interp_group)
+    |union(apt__needrestart_blacklist_interp_host)
+  }}'
+
+# Ignore +x mapped files matching one of these regexs:
+apt__needrestart_blacklist_mappings_global: []
+apt__needrestart_blacklist_mappings_group: []
+apt__needrestart_blacklist_mappings_host: []
+apt__needrestart_blacklist_mappings: '{{
+    apt__needrestart_blacklist_mappings_global
+    |union(apt__needrestart_blacklist_mappings_group)
+    |union(apt__needrestart_blacklist_mappings_host)
+  }}'
+
+# Blacklist services (list of regex)
+apt__needrestart_blacklist_rc_global: []
+apt__needrestart_blacklist_rc_group: []
+apt__needrestart_blacklist_rc_host: []
+apt__needrestart_blacklist_rc: '{{
+    apt__needrestart_blacklist_rc_global
+    |union(apt__needrestart_blacklist_rc_group)
+    |union(apt__needrestart_blacklist_rc_host)
+  }}'
+
+# Override service default selection (hash of regex).
+apt__needrestart_override_rc_global: []
+apt__needrestart_override_rc_group: []
+apt__needrestart_override_rc_host: []
+apt__needrestart_override_rc: '{{
+    apt__needrestart_override_rc_global
+    |union(apt__needrestart_override_rc_group)
+    |union(apt__needrestart_override_rc_host)
+  }}'
 
 
 ## Misc

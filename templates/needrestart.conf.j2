@@ -1,4 +1,30 @@
 {{ ansible_managed|comment(decoration='# ') }}
 $nrconf{verbosity} = {{ apt__needrestart_verbosity|int }};
 $nrconf{restart} = '{{ apt__needrestart_mode }}';
-$nrconf{defno} = {{ apt__needrestart_defno|int }};
+$nrconf{defno} = {{ apt__needrestart_defno|bool|ternary(1, 0)|int }};
+$nrconf{interpscan} = {{ apt__needrestart_interpscan|bool|ternary(1, 0)|int }};
+push @{$nrconf{"blacklist"}}, (
+{% for regexp in apt__needrestart_blacklist|list %}
+  qr({{ regexp }}){{ loop.last|ternary('',',') }}
+{% endfor %}
+);
+push @{$nrconf{"blacklist_interp"}}, (
+{% for regexp in apt__needrestart_blacklist_interp|list %}
+  qr({{ regexp }}){{ loop.last|ternary('',',') }}
+{% endfor %}
+);
+push @{$nrconf{"blacklist_mappings"}}, (
+{% for regexp in apt__needrestart_blacklist_mappings|list %}
+  qr({{ regexp }}){{ loop.last|ternary('',',') }}
+{% endfor %}
+);
+push @{$nrconf{"blacklist_rc"}}, (
+{% for regexp in apt__needrestart_blacklist_rc|list %}
+  qr({{ regexp }}){{ loop.last|ternary('',',') }}
+{% endfor %}
+);
+push @{$nrconf{"override_rc"}}, (
+{% for regexp in apt__needrestart_override_rc|list %}
+  qr({{ regexp }}){{ loop.last|ternary('',',') }}
+{% endfor %}
+);
