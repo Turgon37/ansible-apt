@@ -484,7 +484,7 @@ apt__listchanges_configurations: '{{
 
 
 ## Needrestart
-# Enable or not the apt listchange feature
+# Enable or not the apt needrestart feature
 apt__needrestart_enabled: false
 
 # Main configuration file of apt listchanges
