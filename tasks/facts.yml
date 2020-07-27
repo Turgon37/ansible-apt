@@ -11,7 +11,7 @@
 
 - name: Insert custom fact file
   template:
-    src: apt.fact.py.j2
+    src: apt.facts.py.j2
     dest: "{{ facts__dir|d('/etc/ansible/facts.d') }}/apt.fact"
     owner: root
     group: root

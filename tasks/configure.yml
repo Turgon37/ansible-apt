@@ -17,7 +17,7 @@
     - '{{ apt__cache_directory }}'
     - '{{ apt__backup_directory }}'
 
-- name: Install apt custom scripts
+- name: Install apt templated scripts
   template:
     src: '{{ item }}.j2'
     dest: '{{ apt__custom_scripts_directory }}/{{ item }}'
@@ -26,6 +26,16 @@
     mode: 0755
   with_items:
     - update-packages-lists.sh
+    - prometheus.apt.sh
+
+- name: Install apt custom scripts
+  copy:
+    src: '{{ item }}'
+    dest: '{{ apt__custom_scripts_directory }}/{{ item }}'
+    owner: root
+    group: root
+    mode: 0755
+  with_items: []
 
 - name: Install apt configuration
   template:
@@ -35,10 +45,18 @@
     group: root
     mode: 0644
 
-- name: Update apt listchanges configuration
+- name: Configure apt listchanges
   template:
     src: listchanges.conf.j2
     dest: '{{ apt__listchanges_configuration_file }}'
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure needrestart
+  template:
+    src: needrestart.conf.j2
+    dest: '{{ apt__needrestart_configuration_file }}'
     owner: root
     group: root
     mode: 0644
