@@ -2,7 +2,7 @@
 
 Items starting with `DEPRECATE` are important deprecation notices.
 
-## 2.4.0 (2020-04-26)
+## 2.4.0 (2020-07-27)
 
 + Add job to produce node_exporter metrics regularly
 + Add needrestart
