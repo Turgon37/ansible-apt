@@ -546,13 +546,13 @@ apt__needrestart_blacklist_rc: '{{
   }}'
 
 # Override service default selection (hash of regex).
-apt__needrestart_override_rc_global: []
-apt__needrestart_override_rc_group: []
-apt__needrestart_override_rc_host: []
+apt__needrestart_override_rc_global: {}
+apt__needrestart_override_rc_group: {}
+apt__needrestart_override_rc_host: {}
 apt__needrestart_override_rc: '{{
     apt__needrestart_override_rc_global
-    |union(apt__needrestart_override_rc_group)
-    |union(apt__needrestart_override_rc_host)
+    |combine(apt__needrestart_override_rc_group)
+    |combine(apt__needrestart_override_rc_host)
   }}'
 
 

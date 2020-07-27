@@ -23,8 +23,10 @@ push @{$nrconf{"blacklist_rc"}}, (
   qr({{ regexp }}){{ loop.last|ternary('',',') }}
 {% endfor %}
 );
-push @{$nrconf{"override_rc"}}, (
-{% for regexp in apt__needrestart_override_rc|list %}
-  qr({{ regexp }}){{ loop.last|ternary('',',') }}
-{% endfor %}
-);
+{% if apt__needrestart_override_rc|length %}
+%{$nrconf{"override_rc"{{ '}}' }} = (%{$nrconf{"override_rc"{{ '}}' }}, %{{ '{{' }}
+{%   for regexp,value in apt__needrestart_override_rc|dictsort %}
+  qr({{ regexp }}) => {{ value }}{{ loop.last|ternary('',',') }}
+{%   endfor %}
+{{ '}}' }});
+{% endif %}
