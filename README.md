@@ -82,7 +82,7 @@ All variables which can be overridden are stored in [defaults/main.yml](defaults
 | `apt__needrestart_blacklist_interp_(global/group/host)`   | List of regex          | Ignore script files                                                                                    |
 | `apt__needrestart_blacklist_mappings_(global/group/host)` | List of regex          | Ignore +x mapped files                                                                                 |
 | `apt__needrestart_blacklist_rc_(global/group/host)`       | List of regex          | Blacklist services                                                                                     |
-| `apt__needrestart_override_rc_(global/group/host)`        | List of regex          | Override service                                                                                       |
+| `apt__needrestart_override_rc_(global/group/host)`        | Hash of regex          | Override service                                                                                       |
 
 ### APT configuration
 
